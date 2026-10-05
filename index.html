@@ -1,17 +1,561 @@
-<!DOCTYPE html>
-<html lang=en>
+<!doctype html>
+<html lang="ru">
 <head>
-    <meta charset=utf-8>
-    <meta http-equiv=X-UA-Compatible content="IE=edge">
-    <meta name=viewport content="width=device-width,initial-scale=1">
-    <link rel=icon href=/favicon.ico>
-    <title>chat-bot</title>
-    <link href=static/css/app.css rel=preload as=style>
-    <link href=static/js/app.js rel=preload as=script>
-    <link href=static/css/app.css rel=stylesheet>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <title>Roadmap Offline</title>
+    <style>
+        :root{
+            --bg:#f4f6f8; --panel:#fff; --text:#172033; --muted:#667085; --line:#d0d5dd;
+            --biz:#3b82f6; --tech:#22c55e; --vac:#f59e0b; --danger:#dc2626;
+            --label:190px; --day:14px; --week:98px;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+        button,input,select,textarea{font:inherit}
+        button{cursor:pointer}
+        .app{max-width:100%;padding:16px}
+        .topbar{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+        h1{font-size:24px;margin:0 0 4px}
+        .sub{font-size:12px;color:var(--muted)}
+        .actions{display:flex;gap:8px;flex-wrap:wrap}
+        .btn{border:1px solid var(--line);background:#fff;color:var(--text);padding:8px 11px;border-radius:8px;font-weight:650}
+        .btn.primary{background:#172033;color:#fff;border-color:#172033}
+        .btn.danger{color:#b42318}
+        .settings{display:flex;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:10px;margin-bottom:12px}
+        .field{display:flex;flex-direction:column;gap:4px}
+        .field label{font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:800;letter-spacing:.04em}
+        .field input,.field select,.field textarea{border:1px solid var(--line);border-radius:7px;padding:7px 8px;background:#fff;color:var(--text)}
+        .field input[type=number]{width:90px}
+        .legend{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 10px;font-size:12px;color:#475467}
+        .leg{display:flex;align-items:center;gap:6px}.sw{width:18px;height:10px;border-radius:3px}
+        .panel{background:#fff;border:1px solid #e4e7ec;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.05);margin-bottom:14px}
+        .panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #e4e7ec}
+        .panel-head strong{font-size:14px}.panel-head span{font-size:11px;color:var(--muted)}
+        .scroll{overflow:auto;-webkit-overflow-scrolling:touch}
+        .gantt{position:relative;min-width:900px}
+        .header-row,.resource-row{display:grid;grid-template-columns:var(--label) auto}
+        .left{position:sticky;left:0;z-index:30;background:#fff;border-right:1px solid var(--line);padding:0 10px;display:flex;align-items:center}
+        .horizon{position:relative}
+        .quarter-row{height:24px;border-bottom:1px solid var(--line);background:#eef2f6}
+        .month-row{height:24px;border-bottom:1px solid var(--line);background:#f8fafc}
+        .week-row{height:36px;border-bottom:1px solid var(--line);background:#fff}
+        .headseg{position:absolute;top:0;bottom:0;border-right:1px solid #98a2b3;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;overflow:hidden;white-space:nowrap}
+        .weekseg{position:absolute;top:0;bottom:0;border-right:1px solid #d0d5dd;padding:5px 4px;font-size:10px;color:#475467;overflow:hidden}
+        .resource-row{border-bottom:1px solid #eaecf0}
+        .resource-name{font-size:12px;font-weight:800;background:#fff;align-items:flex-start;padding-top:10px}
+        .lane{position:relative;background:#fff}
+        .lane:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to right,transparent 0,transparent 97px,#e5e7eb 97px,#e5e7eb 98px);pointer-events:none}
+        .weekend{position:absolute;top:0;bottom:0;background:rgba(148,163,184,.09);pointer-events:none}
+        .bar{position:absolute;height:38px;border-radius:8px;color:#fff;padding:6px 24px 7px 8px;overflow:hidden;box-shadow:0 1px 3px rgba(16,24,40,.18);z-index:5;user-select:none;touch-action:none}
+        .bar.biz{background:var(--biz)} .bar.tech{background:var(--tech)}
+        .bar.vac{background:repeating-linear-gradient(135deg,#f59e0b 0,#f59e0b 7px,#fcd34d 7px,#fcd34d 14px);color:#7c2d12;border:1px solid #d97706}
+        .bar.carry{border-right:3px dashed #172033}
+        .bar .name{font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .bar .dates{font-size:9px;opacity:.92;margin-top:3px;white-space:nowrap}
+        .qa-strip{position:absolute;left:0;right:0;bottom:0;height:6px;opacity:.98}
+        .handle{position:absolute;top:0;bottom:0;width:7px;cursor:ew-resize;z-index:7}
+        .handle.left{left:0}.handle.right{right:0}
+        .drag-area{position:absolute;left:7px;right:7px;top:0;bottom:0;cursor:grab}
+        .bar.dragging .drag-area{cursor:grabbing}
+        .today{position:absolute;top:0;bottom:0;width:2px;background:#ef4444;z-index:20;pointer-events:none}
+        .today span{position:absolute;top:2px;left:4px;background:#fff;color:#ef4444;font-size:9px;font-weight:800;padding:1px 3px;border-radius:3px}
+        .capacity{min-width:900px;display:grid}
+        .cap-row{display:grid;grid-template-columns:var(--label) auto;border-bottom:1px solid #eaecf0;min-height:30px}
+        .cap-label{position:sticky;left:0;z-index:5;background:#fff;border-right:1px solid var(--line);padding:6px 10px;font-size:11px;font-weight:750}
+        .cap-track{position:relative;display:flex}
+        .cap-cell{width:98px;flex:0 0 98px;border-right:1px solid #e5e7eb;padding:6px 4px;text-align:center;font-size:10px}
+        .ok{background:#dcfce7}.warn{background:#fee2e2;color:#991b1b;font-weight:800}.neutral{background:#f8fafc}
+        .table-wrap{overflow:auto}
+        table{border-collapse:collapse;width:100%;min-width:1100px;font-size:11px}
+        th,td{border-bottom:1px solid #eaecf0;padding:7px 8px;text-align:left;vertical-align:top}
+        th{position:sticky;top:0;background:#344054;color:#fff;font-size:10px;z-index:2}
+        tr:hover td{background:#fafafa}
+        .tag{display:inline-block;padding:2px 6px;border-radius:999px;font-size:9px;font-weight:800;color:#fff}.tag.biz{background:var(--biz)}.tag.tech{background:var(--tech)}.tag.vac{background:var(--vac);color:#7c2d12}
+        .small-btn{border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 7px;font-size:10px}
+        .modal{position:fixed;inset:0;background:rgba(15,23,42,.48);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
+        .modal.open{display:flex}
+        .dialog{width:min(720px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+        .dialog h2{margin:0 0 12px;font-size:18px}
+        .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .formgrid .wide{grid-column:1/-1}
+        .modal-actions{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:14px}
+        .qa-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
+        .notice{font-size:11px;color:var(--muted);padding:8px 12px;border-top:1px solid #eaecf0;background:#fafafa}
+        .hidden{display:none!important}
+        @media(max-width:800px){
+            .app{padding:8px}.topbar{align-items:stretch}.actions{width:100%}.btn{flex:1}.settings{gap:8px}.formgrid{grid-template-columns:1fr}
+        }
+    </style>
 </head>
 <body>
-<div id=n-chat-app></div>
-<script src=static/js/app.js></script>
+<script id="initial-data" type="application/json">{"version": 1, "settings": {"horizonStart": "2026-09-28", "quarters": 1, "businessSlots": 4, "techSlots": 2}, "activities": [{"id": "a1", "resource": "Разработчик 1", "name": "Объявления", "slot": "Объявления", "type": "Бизнес", "start": "2026-10-01", "end": "2026-11-02", "qa": "QA2", "carry": false, "status": "В работе", "comment": "2 разработчика до 02.11"}, {"id": "a2", "resource": "Разработчик 1", "name": "E2E + доработки", "slot": "Объявления", "type": "Бизнес", "start": "2026-11-02", "end": "2026-12-04", "qa": "QA2", "carry": false, "status": "План", "comment": ""}, {"id": "a3", "resource": "Разработчик 1", "name": "Перенос категорий в мету", "slot": "Перенос категорий", "type": "Бизнес", "start": "2026-12-05", "end": "2026-12-15", "qa": "QA1", "carry": false, "status": "План", "comment": "~1,5 недели"}, {"id": "a4", "resource": "Разработчик 2", "name": "Объявления", "slot": "Объявления", "type": "Бизнес", "start": "2026-10-01", "end": "2026-11-02", "qa": "QA2", "carry": false, "status": "В работе", "comment": "2 разработчика до 02.11"}, {"id": "a5", "resource": "Разработчик 2", "name": "Отпуск", "slot": "", "type": "Отпуск", "start": "2026-11-07", "end": "2026-11-15", "qa": "", "carry": false, "status": "План", "comment": "Рабочие дни 09.11–13.11"}, {"id": "a6", "resource": "Разработчик 2", "name": "Отели · помощь", "slot": "Отели", "type": "Бизнес", "start": "2026-11-16", "end": "2026-11-27", "qa": "QA1", "carry": false, "status": "План", "comment": "Замещение Разработчика 3"}, {"id": "a7", "resource": "Разработчик 2", "name": "Recall", "slot": "Recall", "type": "Бизнес", "start": "2026-12-01", "end": "2026-12-31", "qa": "QA2", "carry": false, "status": "План", "comment": "~1 месяц"}, {"id": "a8", "resource": "Разработчик 3", "name": "Отели", "slot": "Отели", "type": "Бизнес", "start": "2026-10-05", "end": "2026-11-30", "qa": "QA1", "carry": false, "status": "В работе", "comment": ""}, {"id": "a9", "resource": "Разработчик 3", "name": "Отпуск", "slot": "", "type": "Отпуск", "start": "2026-11-14", "end": "2026-11-29", "qa": "", "carry": false, "status": "План", "comment": "Рабочие дни 16.11–27.11"}, {"id": "a10", "resource": "Разработчик 4", "name": "C2C", "slot": "C2C", "type": "Бизнес", "start": "2026-10-05", "end": "2026-10-31", "qa": "QA2", "carry": false, "status": "План", "comment": ""}, {"id": "a11", "resource": "Разработчик 4", "name": "Украина", "slot": "Украина", "type": "Бизнес", "start": "2026-11-02", "end": "2026-11-11", "qa": "QA2", "carry": false, "status": "План", "comment": "~1,5 недели"}, {"id": "a12", "resource": "Разработчик 4", "name": "Оркестратор", "slot": "Оркестратор", "type": "Технический", "start": "2026-11-12", "end": "2026-11-29", "qa": "QA2", "carry": false, "status": "План", "comment": "~2,5 недели"}, {"id": "a13", "resource": "Разработчик 5", "name": "Отпуск", "slot": "", "type": "Отпуск", "start": "2026-10-03", "end": "2026-10-18", "qa": "", "carry": false, "status": "План", "comment": "Рабочие дни 05.10–18.10"}, {"id": "a14", "resource": "Разработчик 5", "name": "Типы", "slot": "Типы", "type": "Бизнес", "start": "2026-10-19", "end": "2026-11-18", "qa": "QA2", "carry": false, "status": "План", "comment": "~1 месяц"}, {"id": "a15", "resource": "Разработчик 5", "name": "Схлопывание сервисов", "slot": "Схлопывание сервисов", "type": "Технический", "start": "2026-11-19", "end": "2026-12-31", "qa": "QA1", "carry": true, "status": "План", "comment": "~2 месяца, хвост уходит в Q1"}, {"id": "a16", "resource": "Разработчик 6", "name": "Отпуск", "slot": "", "type": "Отпуск", "start": "2026-10-03", "end": "2026-10-18", "qa": "", "carry": false, "status": "План", "comment": "Рабочие дни 05.10–18.10"}, {"id": "a17", "resource": "Разработчик 6", "name": "VLM", "slot": "VLM", "type": "Бизнес", "start": "2026-10-19", "end": "2026-11-30", "qa": "QA1", "carry": false, "status": "План", "comment": ""}]}</script>
+<div class="app">
+    <div class="topbar">
+        <div><h1>Q4 2026 · Согласованная роадмапа</h1><div class="sub">В файл уже зашит текущий план команды. Открывается локально, сервер не нужен.</div></div>
+        <div class="actions">
+            <button class="btn primary" id="addActivity">+ Активность</button>
+            <button class="btn" id="addVacation">+ Отпуск</button>
+            <button class="btn" id="exportJson">Экспорт JSON</button>
+            <button class="btn" id="importJson">Импорт JSON</button>
+            <button class="btn" id="downloadHtml">HTML с текущими данными</button>
+            <button class="btn danger" id="resetData">Вернуть исходный Q4</button>
+            <input id="jsonFile" type="file" accept=".json,application/json" class="hidden">
+        </div>
+    </div>
+
+    <div class="settings">
+        <div class="field"><label>Старт горизонта</label><input id="horizonStart" type="date"></div>
+        <div class="field"><label>Кварталов</label><select id="quarters"></select></div>
+        <div class="field"><label>Бизнес-слотов</label><input id="businessSlots" type="number" min="1" max="20"></div>
+        <div class="field"><label>Техслотов</label><input id="techSlots" type="number" min="1" max="20"></div>
+        <div class="field"><label>&nbsp;</label><button id="applySettings" class="btn">Применить</button></div>
+    </div>
+
+    <div class="legend" id="legend"></div>
+
+    <div class="panel">
+        <div class="panel-head"><strong>Роадмапа Q4 — текущий согласованный план</strong><span>Тяни за середину — двигай. За края — меняй начало/конец. Шаг: 1 день.</span></div>
+        <div class="scroll"><div id="gantt" class="gantt"></div></div>
+        <div class="notice">Бизнес — синий, технические — зелёный, отпуска — оранжевый. Тонкая полоса снизу — QA. Пунктир справа — перенос за горизонт/квартал.</div>
+    </div>
+
+
+    <div class="panel">
+        <div class="panel-head"><strong>Что зашито в исходную версию</strong><span>Эти данные восстанавливает кнопка «Вернуть исходный Q4».</span></div>
+        <div style="padding:10px 14px;font-size:12px;line-height:1.65;color:#475467">
+            <b>Разработчик 1:</b> Объявления 01.10–02.11 → E2E + доработки 02.11–04.12 → Перенос категорий в мету 05.12–15.12.<br>
+            <b>Разработчик 2:</b> Объявления 01.10–02.11 → отпуск 07.11–15.11 → помощь по Отелям 16.11–27.11 → Recall 01.12–31.12.<br>
+            <b>Разработчик 3:</b> Отели 05.10–30.11; отпуск 14.11–29.11.<br>
+            <b>Разработчик 4:</b> C2C 05.10–31.10 → Украина 02.11–11.11 → Оркестратор 12.11–29.11.<br>
+            <b>Разработчик 5:</b> отпуск 03.10–18.10 → Типы 19.10–18.11 → Схлопывание сервисов с 19.11, хвост в Q1.<br>
+            <b>Разработчик 6:</b> отпуск 03.10–18.10 → VLM 19.10–30.11.<br>
+            <b>QA1:</b> Отели, VLM, Схлопывание, Перенос категорий. <b>QA2:</b> Объявления/E2E, C2C, Типы, Украина, Оркестратор, Recall.
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head"><strong>Контроль capacity</strong><span>Бизнес/тех считаются по уникальным слотам проектов, а не по количеству разработчиков.</span></div>
+        <div class="scroll"><div id="capacity" class="capacity"></div></div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head"><strong>Данные</strong><span>Редактирование открывается кнопкой или кликом по колбаске.</span></div>
+        <div class="table-wrap"><table id="dataTable"></table></div>
+    </div>
+</div>
+
+<div class="modal" id="editorModal">
+    <div class="dialog">
+        <h2 id="editorTitle">Активность</h2>
+        <div class="formgrid">
+            <div class="field"><label>Разработчик / ресурс</label><input id="fResource" list="resourceList"></div>
+            <div class="field"><label>Название</label><input id="fName"></div>
+            <div class="field"><label>Слот проекта</label><input id="fSlot" placeholder="Для capacity. Например: Отели"></div>
+            <div class="field"><label>Тип</label><select id="fType"><option>Бизнес</option><option>Технический</option><option>Отпуск</option></select></div>
+            <div class="field"><label>Начало</label><input id="fStart" type="date"></div>
+            <div class="field"><label>Конец</label><input id="fEnd" type="date"></div>
+            <div class="field"><label>QA</label><input id="fQa" list="qaList" placeholder="QA1, QA2, QA3…"></div>
+            <div class="field"><label>Статус</label><select id="fStatus"><option>План</option><option>В работе</option><option>Готово</option><option>Hold</option></select></div>
+            <div class="field"><label>Перенос</label><select id="fCarry"><option value="false">Нет</option><option value="true">Да</option></select></div>
+            <div class="field wide"><label>Комментарий</label><textarea id="fComment" rows="3"></textarea></div>
+        </div>
+        <datalist id="resourceList"></datalist><datalist id="qaList"></datalist>
+        <div class="modal-actions">
+            <button class="btn danger" id="deleteActivity">Удалить</button>
+            <div style="display:flex;gap:8px"><button class="btn" id="cancelEditor">Отмена</button><button class="btn primary" id="saveActivity">Сохранить</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (() => {
+        const STORAGE_KEY = "offline-roadmap-q4-final-v4";
+        const DAY = 86400000;
+        const DAY_PX = 14;
+        const WEEK_PX = DAY_PX * 7;
+        const QA_COLORS = ["#8b5cf6","#14b8a6","#ec4899","#f97316","#06b6d4","#84cc16","#a855f7","#eab308","#64748b","#dc2626"];
+
+        const initialScript = document.getElementById("initial-data");
+        const INITIAL = JSON.parse(initialScript.textContent);
+
+        const clone = x => JSON.parse(JSON.stringify(x));
+        const parseDate = s => new Date(s + "T00:00:00");
+        const fmt = d => {
+            const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
+            return `${y}-${m}-${day}`;
+        };
+        const fmtShort = s => {
+            const d=parseDate(s); return `${String(d.getDate()).padStart(2,"0")}.${String(d.getMonth()+1).padStart(2,"0")}`;
+        };
+        const addDays = (s,n) => { const d=typeof s==="string"?parseDate(s):new Date(s); d.setDate(d.getDate()+n); return d; };
+        const daysBetween = (a,b) => Math.round((parseDate(b)-parseDate(a))/DAY);
+        const overlap = (a1,a2,b1,b2) => parseDate(a1) <= parseDate(b2) && parseDate(a2) >= parseDate(b1);
+        const uid = () => "a" + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+
+        function loadState(){
+            try{
+                const x=localStorage.getItem(STORAGE_KEY);
+                if(x) return JSON.parse(x);
+            }catch(e){}
+            return clone(INITIAL);
+        }
+        let state = loadState();
+        let editingId = null;
+        let drag = null;
+        let suppressClickUntil = 0;
+
+        function saveState(){
+            try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+        }
+
+        function qaColor(name){
+            if(!name) return "transparent";
+            const m=name.match(/(\d+)/);
+            if(m) return QA_COLORS[(Number(m[1])-1)%QA_COLORS.length];
+            let h=0; for(const c of name) h=(h*31+c.charCodeAt(0))>>>0;
+            return QA_COLORS[h%QA_COLORS.length];
+        }
+
+        function horizon(){
+            const start=parseDate(state.settings.horizonStart);
+            const quarters=Math.max(1,Number(state.settings.quarters||1));
+
+            // The start is normally the Monday before the quarter.
+            // Use a date inside that week to identify the calendar quarter.
+            const anchor=addDays(start,3);
+            const qStartMonth=Math.floor(anchor.getMonth()/3)*3;
+            const quarterEnd=new Date(anchor.getFullYear(), qStartMonth + quarters*3, 0);
+            quarterEnd.setHours(0,0,0,0);
+
+            const calendarDays=Math.round((quarterEnd-start)/DAY)+1;
+            const weeks=Math.ceil(calendarDays/7);
+            const end=addDays(start,weeks*7-1); // full Sun-ended week for display
+            return {start,end,quarterEnd,weeks,totalDays:weeks*7,width:weeks*WEEK_PX};
+        }
+
+        function resources(){
+            const arr=[...new Set(state.activities.map(a=>a.resource).filter(Boolean))];
+            return arr.sort((a,b)=>a.localeCompare(b,"ru",{numeric:true}));
+        }
+        function qas(){
+            return [...new Set(state.activities.map(a=>a.qa).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ru",{numeric:true}));
+        }
+
+        function packLevels(items){
+            const sorted=[...items].sort((a,b)=>a.start.localeCompare(b.start)||a.end.localeCompare(b.end));
+            const levels=[];
+            const map=new Map();
+            for(const a of sorted){
+                let level=0;
+                for(; level<levels.length; level++){
+                    if(parseDate(a.start) > levels[level]) break;
+                }
+                if(level===levels.length) levels.push(parseDate(a.end)); else levels[level]=parseDate(a.end);
+                map.set(a.id, level);
+            }
+            return {map, count:Math.max(1,levels.length)};
+        }
+
+        function render(){
+            saveState();
+            syncSettings();
+            renderLegend();
+            renderGantt();
+            renderCapacity();
+            renderTable();
+            syncDatalists();
+        }
+
+        function syncSettings(){
+            horizonStart.value=state.settings.horizonStart;
+            quarters.value=String(state.settings.quarters);
+            businessSlots.value=state.settings.businessSlots;
+            techSlots.value=state.settings.techSlots;
+        }
+
+        function renderLegend(){
+            const el=document.getElementById("legend");
+            const parts=[
+                `<div class="leg"><span class="sw" style="background:var(--biz)"></span>Бизнес</div>`,
+                `<div class="leg"><span class="sw" style="background:var(--tech)"></span>Технический</div>`,
+                `<div class="leg"><span class="sw" style="background:var(--vac)"></span>Отпуск</div>`
+            ];
+            for(const qa of qas()) parts.push(`<div class="leg"><span class="sw" style="background:${qaColor(qa)}"></span>${esc(qa)}</div>`);
+            el.innerHTML=parts.join("");
+        }
+
+        function buildHeader(container,h){
+            const labelTop = `<div class="left" style="height:84px;align-items:center;font-size:11px;font-weight:800;background:#f8fafc">Ресурс</div>`;
+            const wrap=document.createElement("div");
+            wrap.className="header-row";
+            wrap.innerHTML=labelTop;
+            const hz=document.createElement("div");
+            hz.className="horizon";
+            hz.style.width=h.width+"px";
+            hz.innerHTML=`<div class="quarter-row"></div><div class="month-row"></div><div class="week-row"></div>`;
+            wrap.appendChild(hz);
+            container.appendChild(wrap);
+
+            const qrow=hz.querySelector(".quarter-row"), mrow=hz.querySelector(".month-row"), wrow=hz.querySelector(".week-row");
+
+            // weeks
+            for(let i=0;i<h.weeks;i++){
+                const ws=addDays(h.start,i*7), we=addDays(ws,6);
+                const d=document.createElement("div"); d.className="weekseg"; d.style.left=(i*WEEK_PX)+"px"; d.style.width=WEEK_PX+"px";
+                d.innerHTML=`<b>${String(ws.getDate()).padStart(2,"0")}.${String(ws.getMonth()+1).padStart(2,"0")}</b><br><span style="color:#98a2b3">Пн–Вс</span>`;
+                wrow.appendChild(d);
+            }
+            // month segments
+            let cur=new Date(h.start), segStart=new Date(cur), key=`${cur.getFullYear()}-${cur.getMonth()}`;
+            for(let i=1;i<=h.totalDays;i++){
+                const d=addDays(h.start,i);
+                const k=`${d.getFullYear()}-${d.getMonth()}`;
+                if(i===h.totalDays || k!==key){
+                    const segEnd=addDays(h.start,i-1), left=Math.max(0,(segStart-h.start)/DAY)*DAY_PX, width=((segEnd-segStart)/DAY+1)*DAY_PX;
+                    const el=document.createElement("div"); el.className="headseg"; el.style.left=left+"px"; el.style.width=width+"px";
+                    el.textContent=segStart.toLocaleDateString("ru-RU",{month:"long",year:"numeric"});
+                    mrow.appendChild(el);
+                    segStart=new Date(d); key=k;
+                }
+            }
+            // quarter segments
+            function qKey(d){return `${d.getFullYear()}-Q${Math.floor(d.getMonth()/3)+1}`}
+            segStart=new Date(h.start); key=qKey(segStart);
+            for(let i=1;i<=h.totalDays;i++){
+                const d=addDays(h.start,i), k=qKey(d);
+                if(i===h.totalDays || k!==key){
+                    const segEnd=addDays(h.start,i-1), left=((segStart-h.start)/DAY)*DAY_PX, width=((segEnd-segStart)/DAY+1)*DAY_PX;
+                    const el=document.createElement("div"); el.className="headseg"; el.style.left=left+"px"; el.style.width=width+"px"; el.textContent=key.replace("-"," ");
+                    qrow.appendChild(el);
+                    segStart=new Date(d); key=k;
+                }
+            }
+        }
+
+        function addWeekendShade(lane,h){
+            for(let i=0;i<h.totalDays;i++){
+                const d=addDays(h.start,i);
+                if(d.getDay()===6){
+                    const e=document.createElement("div"); e.className="weekend"; e.style.left=(i*DAY_PX)+"px"; e.style.width=(2*DAY_PX)+"px"; lane.appendChild(e);
+                }
+            }
+        }
+
+        function renderGantt(){
+            const root=document.getElementById("gantt"); root.innerHTML="";
+            const h=horizon(); root.style.width=(190+h.width)+"px";
+            buildHeader(root,h);
+
+            for(const res of resources()){
+                const items=state.activities.filter(a=>a.resource===res && overlap(a.start,a.end,fmt(h.start),fmt(h.end)));
+                const pack=packLevels(items);
+                const laneH=pack.count*50+10;
+                const row=document.createElement("div"); row.className="resource-row";
+                const left=document.createElement("div"); left.className="left resource-name"; left.style.height=laneH+"px"; left.textContent=res;
+                const lane=document.createElement("div"); lane.className="lane"; lane.style.height=laneH+"px"; lane.style.width=h.width+"px";
+                addWeekendShade(lane,h);
+
+                const today=new Date(); today.setHours(0,0,0,0);
+                if(today>=h.start && today<=h.end){
+                    const t=document.createElement("div"); t.className="today"; t.style.left=((today-h.start)/DAY*DAY_PX)+"px"; t.innerHTML="<span>сегодня</span>"; lane.appendChild(t);
+                }
+
+                for(const a of items){
+                    const level=pack.map.get(a.id)||0;
+                    const clipStart=parseDate(a.start)<h.start?h.start:parseDate(a.start);
+                    const clipEnd=parseDate(a.end)>h.end?h.end:parseDate(a.end);
+                    const leftPx=((clipStart-h.start)/DAY)*DAY_PX;
+                    const widthPx=Math.max(DAY_PX,((clipEnd-clipStart)/DAY+1)*DAY_PX);
+                    const bar=document.createElement("div");
+                    bar.className=`bar ${a.type==="Бизнес"?"biz":a.type==="Технический"?"tech":"vac"} ${a.carry?"carry":""}`;
+                    bar.style.left=leftPx+"px"; bar.style.width=widthPx+"px"; bar.style.top=(level*50+6)+"px";
+                    bar.dataset.id=a.id;
+                    bar.innerHTML=`<div class="handle left" data-mode="resize-left"></div><div class="drag-area" data-mode="move"></div><div class="handle right" data-mode="resize-right"></div>
+          <div class="name">${esc(a.name)}</div><div class="dates">${fmtShort(a.start)}–${fmtShort(a.end)}${a.qa?` · ${esc(a.qa)}`:""}</div>${a.qa?`<div class="qa-strip" style="background:${qaColor(a.qa)}"></div>`:""}`;
+                    bar.addEventListener("click",e=>{ if(Date.now() < suppressClickUntil) return; if(!e.target.classList.contains("handle")) openEditor(a.id); });
+                    bar.addEventListener("pointerdown",startDrag);
+                    lane.appendChild(bar);
+                }
+                row.append(left,lane); root.appendChild(row);
+            }
+        }
+
+        function startDrag(e){
+            const bar=e.currentTarget, id=bar.dataset.id, a=state.activities.find(x=>x.id===id); if(!a) return;
+            const mode=e.target.dataset.mode || (e.target.closest(".drag-area")?"move":null); if(!mode) return;
+            e.preventDefault(); e.stopPropagation();
+            drag={
+                id, bar, mode, startX:e.clientX,
+                origStart:a.start, origEnd:a.end,
+                tempStart:a.start, tempEnd:a.end,
+                h:horizon(), moved:false
+            };
+            bar.classList.add("dragging");
+            document.addEventListener("pointermove",onDrag);
+            document.addEventListener("pointerup",endDrag,{once:true});
+            document.addEventListener("pointercancel",endDrag,{once:true});
+        }
+
+        function onDrag(e){
+            if(!drag) return;
+            e.preventDefault();
+            const delta=Math.round((e.clientX-drag.startX)/DAY_PX);
+            if(delta!==0) drag.moved=true;
+
+            let ns=drag.origStart, ne=drag.origEnd;
+            if(drag.mode==="move"){
+                ns=fmt(addDays(drag.origStart,delta));
+                ne=fmt(addDays(drag.origEnd,delta));
+            }else if(drag.mode==="resize-left"){
+                let d=addDays(drag.origStart,delta);
+                if(d>parseDate(drag.origEnd)) d=parseDate(drag.origEnd);
+                ns=fmt(d);
+            }else if(drag.mode==="resize-right"){
+                let d=addDays(drag.origEnd,delta);
+                if(d<parseDate(drag.origStart)) d=parseDate(drag.origStart);
+                ne=fmt(d);
+            }
+            drag.tempStart=ns; drag.tempEnd=ne;
+
+            const h=drag.h;
+            const clipStart=parseDate(ns)<h.start?h.start:parseDate(ns);
+            const clipEnd=parseDate(ne)>h.end?h.end:parseDate(ne);
+            const leftPx=((clipStart-h.start)/DAY)*DAY_PX;
+            const widthPx=Math.max(DAY_PX,((clipEnd-clipStart)/DAY+1)*DAY_PX);
+            drag.bar.style.left=leftPx+"px";
+            drag.bar.style.width=widthPx+"px";
+            const dates=drag.bar.querySelector(".dates");
+            if(dates) dates.textContent=`${fmtShort(ns)}–${fmtShort(ne)}`;
+        }
+
+        function endDrag(){
+            document.removeEventListener("pointermove",onDrag);
+            if(!drag) return;
+            const a=state.activities.find(x=>x.id===drag.id);
+            if(a && drag.moved){
+                a.start=drag.tempStart;
+                a.end=drag.tempEnd;
+                suppressClickUntil=Date.now()+350;
+            }
+            drag=null;
+            render();
+        }
+
+        function weeklyStats(ws){
+            const we=fmt(addDays(ws,6)), s=fmt(ws);
+            const active=state.activities.filter(a=>overlap(a.start,a.end,s,we));
+            const unique=(type)=>new Set(active.filter(a=>a.type===type).map(a=>a.slot||a.name)).size;
+            const vacations=new Set(active.filter(a=>a.type==="Отпуск").map(a=>a.resource)).size;
+            const qaStats={};
+            for(const a of active){
+                if(!a.qa) continue;
+                if(!qaStats[a.qa]) qaStats[a.qa]=new Set();
+                qaStats[a.qa].add(a.slot||a.name);
+            }
+            return {biz:unique("Бизнес"),tech:unique("Технический"),vac:vacations,qa:Object.fromEntries(Object.entries(qaStats).map(([k,v])=>[k,v.size]))};
+        }
+
+        function renderCapacity(){
+            const root=document.getElementById("capacity"), h=horizon(); root.innerHTML=""; root.style.width=(190+h.width)+"px";
+            const header=document.createElement("div"); header.className="cap-row";
+            header.innerHTML=`<div class="cap-label">Неделя</div><div class="cap-track">${Array.from({length:h.weeks},(_,i)=>{const d=addDays(h.start,i*7);return `<div class="cap-cell neutral">${fmtShort(fmt(d))}</div>`}).join("")}</div>`;
+            root.appendChild(header);
+
+            const weeks=Array.from({length:h.weeks},(_,i)=>addDays(h.start,i*7));
+            const stats=weeks.map(weeklyStats);
+            const metrics=[
+                ["Бизнес-слоты", s=>s.biz, Number(state.settings.businessSlots)],
+                ["Техслоты", s=>s.tech, Number(state.settings.techSlots)],
+                ["Отпуска", s=>s.vac, null],
+                ...qas().map(q=>[q, s=>s.qa[q]||0, 1])
+            ];
+            for(const [label,get,limit] of metrics){
+                const row=document.createElement("div"); row.className="cap-row";
+                const cells=stats.map(s=>{const v=get(s); const cls=limit==null?"neutral":v>limit?"warn":"ok"; return `<div class="cap-cell ${cls}">${v}${limit!=null?` / ${limit}`:""}</div>`}).join("");
+                row.innerHTML=`<div class="cap-label">${esc(label)}</div><div class="cap-track">${cells}</div>`; root.appendChild(row);
+            }
+        }
+
+        function renderTable(){
+            const t=document.getElementById("dataTable");
+            const rows=[...state.activities].sort((a,b)=>a.resource.localeCompare(b.resource,"ru",{numeric:true})||a.start.localeCompare(b.start));
+            t.innerHTML=`<thead><tr><th>Ресурс</th><th>Проект</th><th>Слот</th><th>Тип</th><th>Начало</th><th>Конец</th><th>QA</th><th>Перенос</th><th>Статус</th><th>Комментарий</th><th></th></tr></thead>
+      <tbody>${rows.map(a=>`<tr>
+        <td>${esc(a.resource)}</td><td><b>${esc(a.name)}</b></td><td>${esc(a.slot||"")}</td>
+        <td><span class="tag ${a.type==="Бизнес"?"biz":a.type==="Технический"?"tech":"vac"}">${esc(a.type)}</span></td>
+        <td>${fmtShort(a.start)}</td><td>${fmtShort(a.end)}</td>
+        <td>${a.qa?`<span class="qa-dot" style="background:${qaColor(a.qa)}"></span>${esc(a.qa)}`:""}</td>
+        <td>${a.carry?"Да":""}</td><td>${esc(a.status||"")}</td><td>${esc(a.comment||"")}</td>
+        <td><button class="small-btn" data-edit="${a.id}">Править</button></td>
+      </tr>`).join("")}</tbody>`;
+            t.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openEditor(b.dataset.edit));
+        }
+
+        function syncDatalists(){
+            resourceList.innerHTML=resources().map(x=>`<option value="${escAttr(x)}">`).join("");
+            const known=[...new Set([...qas(),...Array.from({length:10},(_,i)=>`QA${i+1}`)])].sort((a,b)=>a.localeCompare(b,"ru",{numeric:true}));
+            qaList.innerHTML=known.map(x=>`<option value="${escAttr(x)}">`).join("");
+        }
+
+        function openEditor(id=null,preset=null){
+            editingId=id;
+            const a=id?state.activities.find(x=>x.id===id):(preset||{resource:resources()[0]||"Разработчик 1",name:"",slot:"",type:"Бизнес",start:fmt(new Date()),end:fmt(new Date()),qa:"",carry:false,status:"План",comment:""});
+            editorTitle.textContent=id?"Редактировать активность":"Новая активность";
+            fResource.value=a.resource||""; fName.value=a.name||""; fSlot.value=a.slot||""; fType.value=a.type||"Бизнес";
+            fStart.value=a.start||""; fEnd.value=a.end||""; fQa.value=a.qa||""; fStatus.value=a.status||"План";
+            fCarry.value=String(!!a.carry); fComment.value=a.comment||"";
+            deleteActivity.style.visibility=id?"visible":"hidden";
+            editorModal.classList.add("open");
+        }
+        function closeEditor(){ editorModal.classList.remove("open"); editingId=null; }
+
+        function saveEditor(){
+            const obj={
+                id:editingId||uid(), resource:fResource.value.trim(), name:fName.value.trim(), slot:fSlot.value.trim(),
+                type:fType.value, start:fStart.value, end:fEnd.value, qa:fType.value==="Отпуск"?"":fQa.value.trim(),
+                carry:fCarry.value==="true", status:fStatus.value, comment:fComment.value.trim()
+            };
+            if(!obj.resource||!obj.name||!obj.start||!obj.end){ alert("Заполни ресурс, название и даты."); return; }
+            if(parseDate(obj.end)<parseDate(obj.start)){ alert("Дата окончания раньше даты начала."); return; }
+            if(!obj.slot && obj.type!=="Отпуск") obj.slot=obj.name;
+            if(editingId){ const i=state.activities.findIndex(x=>x.id===editingId); state.activities[i]=obj; } else state.activities.push(obj);
+            closeEditor(); render();
+        }
+
+        function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+        function escAttr(s){return esc(s).replace(/`/g,"&#96;")}
+
+        // controls
+        for(let i=1;i<=8;i++){ const o=document.createElement("option"); o.value=i; o.textContent=i; quarters.appendChild(o); }
+        addActivity.onclick=()=>openEditor();
+        addVacation.onclick=()=>openEditor(null,{resource:resources()[0]||"Разработчик 1",name:"Отпуск",slot:"",type:"Отпуск",start:fmt(new Date()),end:fmt(new Date()),qa:"",carry:false,status:"План",comment:""});
+        cancelEditor.onclick=closeEditor;
+        editorModal.addEventListener("click",e=>{if(e.target===editorModal) closeEditor()});
+        saveActivity.onclick=saveEditor;
+        deleteActivity.onclick=()=>{ if(editingId && confirm("Удалить активность?")){state.activities=state.activities.filter(x=>x.id!==editingId); closeEditor(); render();}};
+        applySettings.onclick=()=>{
+            state.settings.horizonStart=horizonStart.value; state.settings.quarters=Number(quarters.value);
+            state.settings.businessSlots=Number(businessSlots.value)||4; state.settings.techSlots=Number(techSlots.value)||2; render();
+        };
+        resetData.onclick=()=>{if(confirm("Вернуть согласованную исходную роадмапу Q4 и удалить локальные правки?")){state=clone(INITIAL);saveState();render();}};
+        exportJson.onclick=()=>downloadBlob(JSON.stringify(state,null,2),"roadmap-data.json","application/json");
+        importJson.onclick=()=>jsonFile.click();
+        jsonFile.onchange=async()=>{const f=jsonFile.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!x.settings||!Array.isArray(x.activities))throw 0;state=x;render();}catch(e){alert("Некорректный JSON.");}jsonFile.value="";};
+
+        function downloadBlob(text,name,type){
+            const blob=new Blob([text],{type}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+        }
+        downloadHtml.onclick=()=>{
+            const old=initialScript.textContent;
+            initialScript.textContent=JSON.stringify(state).replace(/<\//g,"<\\/");
+            const html="<!doctype html>\n"+document.documentElement.outerHTML;
+            initialScript.textContent=old;
+            downloadBlob(html,"roadmap-offline-snapshot.html","text/html;charset=utf-8");
+        };
+
+        render();
+    })();
+</script>
 </body>
 </html>
