@@ -8,6 +8,7 @@
 :root{
   --bg:#f4f6f8; --panel:#fff; --text:#172033; --muted:#667085; --line:#d0d5dd;
   --biz:#3b82f6; --tech:#22c55e; --vac:#f59e0b; --danger:#dc2626;
+  --ds:#7c3aed; --go:#0e7490;
   --label:190px; --day:14px; --week:98px;
 }
 *{box-sizing:border-box}
@@ -44,6 +45,17 @@ h1{font-size:24px;margin:0 0 4px}
 .weekseg{position:absolute;top:0;bottom:0;border-right:1px solid #d0d5dd;padding:5px 4px;font-size:10px;color:#475467;overflow:hidden}
 .resource-row{border-bottom:1px solid #eaecf0}
 .resource-name{font-size:12px;font-weight:800;background:#fff;align-items:flex-start;padding-top:10px}
+.resource-button{border:0;background:none;color:inherit;text-align:left;padding:0;display:flex;flex-direction:column;align-items:flex-start;gap:5px;width:100%;overflow-wrap:anywhere}
+.resource-button:hover .developer-name{text-decoration:underline}
+.resource-button .developer-name{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.role-badge{display:inline-block;border-radius:5px;padding:3px 6px;font-size:10px;font-weight:800;background:#f2f4f7;color:#667085;white-space:nowrap}
+.role-ds .resource-name,.role-ds .lane{background:#faf7ff}
+.role-go .resource-name,.role-go .lane{background:#f0f9fc}
+.role-ds .resource-name{border-left:4px solid var(--ds)}
+.role-go .resource-name{border-left:4px solid var(--go)}
+.role-badge.ds{color:var(--ds);background:#ede9fe}
+.role-badge.go{color:var(--go);background:#cffafe}
+.developer-cell{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
 .lane{position:relative;background:#fff}
 .lane:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to right,transparent 0,transparent 97px,#e5e7eb 97px,#e5e7eb 98px);pointer-events:none}
 .weekend{position:absolute;top:0;bottom:0;background:rgba(148,163,184,.09);pointer-events:none}
@@ -77,6 +89,13 @@ tr:hover td{background:#fafafa}
 .modal.open{display:flex}
 .dialog{width:min(720px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
 .dialog h2{margin:0 0 12px;font-size:18px}
+.developer-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow:auto;margin:12px 0}
+.developer-item{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #e4e7ec;border-radius:8px;padding:8px}
+.developer-item .developer-name{overflow-wrap:anywhere;min-width:0}
+.developer-item .small-btn{flex-shrink:0}
+.developer-form{border:0;padding:0;margin:14px 0 0;min-width:0}
+.developer-form legend{font-size:14px;font-weight:750;margin-bottom:10px}
+.form-error{color:#b42318;font-size:12px;margin:10px 0 0}
 .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .formgrid .wide{grid-column:1/-1}
 .modal-actions{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:14px}
@@ -118,6 +137,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     <div class="actions">
       <button class="btn primary edit-control" id="addActivity">+ Активность</button>
       <button class="btn edit-control" id="addVacation">+ Отпуск</button>
+      <button class="btn edit-control" id="manageDevelopers">Разработчики</button>
       <button class="btn" id="reloadCloud">Обновить</button>
       <button class="btn" id="exportJson">Экспорт JSON</button>
       <button class="btn edit-control" id="importJson">Импорт JSON</button>
@@ -177,7 +197,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   <div class="dialog">
     <h2 id="editorTitle">Активность</h2>
     <div class="formgrid">
-      <div class="field"><label>Разработчик / ресурс</label><input id="fResource" list="resourceList"></div>
+      <div class="field"><label for="fResource">Разработчик / ресурс</label><select id="fResource"></select></div>
       <div class="field"><label>Название</label><input id="fName"></div>
       <div class="field"><label>Слот проекта</label><input id="fSlot" placeholder="Для capacity. Например: Отели"></div>
       <div class="field"><label>Тип</label><select id="fType"><option>Бизнес</option><option>Технический</option><option>Отпуск</option></select></div>
@@ -188,12 +208,31 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
       <div class="field"><label>Перенос</label><select id="fCarry"><option value="false">Нет</option><option value="true">Да</option></select></div>
       <div class="field wide"><label>Комментарий</label><textarea id="fComment" rows="3"></textarea></div>
     </div>
-    <datalist id="resourceList"></datalist>
     <datalist id="qaList"></datalist>
     <div class="modal-actions">
       <button class="btn danger" id="deleteActivity">Удалить</button>
       <div style="display:flex;gap:8px"><button class="btn" id="cancelEditor">Отмена</button><button class="btn primary" id="saveActivity">Сохранить</button></div>
     </div>
+  </div>
+</div>
+
+<div class="modal" id="developersModal" role="dialog" aria-modal="true" aria-labelledby="developersTitle">
+  <div class="dialog">
+    <h2 id="developersTitle">Разработчики</h2>
+    <p class="sub">Добавляйте участников и выбирайте направление. Имя и цвет обновляются во всех их активностях.</p>
+    <div class="developer-list" id="developerList"></div>
+    <button class="btn" id="newDeveloper" type="button">+ Разработчик</button>
+    <form id="developerForm">
+      <fieldset class="developer-form" id="developerFields">
+        <legend id="developerFormTitle">Новый разработчик</legend>
+        <div class="formgrid">
+          <div class="field"><label for="developerName">Имя</label><input id="developerName" required maxlength="80" autocomplete="off"></div>
+          <div class="field"><label for="developerRole">Направление</label><select id="developerRole" required><option value="">Выберите направление</option><option value="DS">DS · Data Science</option><option value="Go">Go · Разработка</option></select></div>
+        </div>
+        <p class="form-error" id="developerError" role="alert" hidden></p>
+        <div class="modal-actions"><button class="btn" type="button" id="closeDevelopers">Закрыть</button><button class="btn primary" type="submit" id="saveDeveloper">Добавить</button></div>
+      </fieldset>
+    </form>
   </div>
 </div>
 
@@ -233,6 +272,10 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     start_date:a.start, end_date:a.end, qa:a.type==="Отпуск"?null:(a.qa||null),
     carry:!!a.carry, status:a.status||"План", comment:a.comment||null
   });
+  const dbToSettings = r => ({
+    horizonStart:r.horizon_start,quarters:r.quarters,businessSlots:r.business_slots,techSlots:r.tech_slots,
+    developers:r.developers||[],version:r.version,updated_at:r.updated_at,updated_by_email:r.updated_by_email
+  });
 
   let state = clone(INITIAL);
   let sb = null;
@@ -244,6 +287,11 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   let realtimeChannel = null;
   let reloadTimer = null;
   let pendingRealtimeReload = false;
+  let developersAvailable = false;
+  let editingDeveloperId = null;
+  let developerEditingVersion = null;
+  let savingDeveloper = false;
+  let developerReturnFocus = null;
 
   // Restore a cached view while the cloud session is being established.
   try{
@@ -289,8 +337,23 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     const end=addDays(start,weeks*7-1);
     return {start,end,quarterEnd,weeks,totalDays:weeks*7,width:weeks*WEEK_PX};
   }
+  // Activity.resource is a stable reference; legacy resource names remain valid IDs.
+  function developers(){
+    const entries=new Map((state.settings.developers||[]).map(d=>[d.id,d]));
+    for(const a of state.activities){
+      if(a.resource&&!entries.has(a.resource))entries.set(a.resource,{id:a.resource,name:a.resource,role:""});
+    }
+    return [...entries.values()].sort((a,b)=>a.name.localeCompare(b.name,"ru",{numeric:true}));
+  }
+  function developerFor(id){
+    return (state.settings.developers||[]).find(d=>d.id===id)||{id,name:id,role:""};
+  }
+  function developerBadge(d){
+    const role=d.role==="DS"?"ds":d.role==="Go"?"go":"";
+    return `<span class="role-badge ${role}">${role?esc(d.role):"Без направления"}</span>`;
+  }
   function resources(){
-    return [...new Set(state.activities.map(a=>a.resource).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ru",{numeric:true}));
+    return developers().map(d=>d.id);
   }
   function qas(){
     return [...new Set(state.activities.map(a=>a.qa).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ru",{numeric:true}));
@@ -314,6 +377,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     renderGantt();
     renderCapacity();
     renderTable();
+    renderDeveloperList();
     syncDatalists();
     latestChange();
     setEditability();
@@ -328,7 +392,9 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     const parts=[
       `<div class="leg"><span class="sw" style="background:var(--biz)"></span>Бизнес</div>`,
       `<div class="leg"><span class="sw" style="background:var(--tech)"></span>Технический</div>`,
-      `<div class="leg"><span class="sw" style="background:var(--vac)"></span>Отпуск</div>`
+      `<div class="leg"><span class="sw" style="background:var(--vac)"></span>Отпуск</div>`,
+      `<div class="leg"><span class="sw" style="background:var(--ds)"></span>DS-разработчики</div>`,
+      `<div class="leg"><span class="sw" style="background:var(--go)"></span>Go-разработчики</div>`
     ];
     for(const qa of qas()) parts.push(`<div class="leg"><span class="sw" style="background:${qaColor(qa)}"></span>${esc(qa)}</div>`);
     legend.innerHTML=parts.join("");
@@ -381,8 +447,13 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     for(const res of resources()){
       const items=state.activities.filter(a=>a.resource===res && overlap(a.start,a.end,fmt(h.start),fmt(h.end)));
       const pack=packLevels(items), laneH=pack.count*50+10;
-      const row=document.createElement("div"); row.className="resource-row";
-      const left=document.createElement("div"); left.className="left resource-name"; left.style.height=laneH+"px"; left.textContent=res;
+      const developer=developerFor(res), role=developer.role==="DS"?"ds":developer.role==="Go"?"go":"unknown";
+      const row=document.createElement("div"); row.className=`resource-row role-${role}`;
+      const left=document.createElement("div"); left.className="left resource-name"; left.style.height=laneH+"px";
+      const edit=document.createElement("button"); edit.className="resource-button";
+      edit.title=`Редактировать разработчика: ${developer.name}`;
+      edit.innerHTML=`<span class="developer-name">${esc(developer.name)}</span>${developerBadge(developer)}`;
+      edit.onclick=()=>openDevelopers(res);left.appendChild(edit);
       const lane=document.createElement("div"); lane.className="lane"; lane.style.height=laneH+"px"; lane.style.width=h.width+"px"; addWeekendShade(lane,h);
       const today=new Date(); today.setHours(0,0,0,0);
       if(today>=h.start&&today<=h.end){
@@ -436,10 +507,10 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     }
   }
   function renderTable(){
-    const rows=[...state.activities].sort((a,b)=>a.resource.localeCompare(b.resource,"ru",{numeric:true})||a.start.localeCompare(b.start));
+    const rows=[...state.activities].sort((a,b)=>developerFor(a.resource).name.localeCompare(developerFor(b.resource).name,"ru",{numeric:true})||a.start.localeCompare(b.start));
     dataTable.innerHTML=`<thead><tr><th>Ресурс</th><th>Проект</th><th>Слот</th><th>Тип</th><th>Начало</th><th>Конец</th><th>QA</th><th>Перенос</th><th>Статус</th><th>Комментарий</th><th>Обновлено</th><th></th></tr></thead>
       <tbody>${rows.map(a=>`<tr>
-        <td>${esc(a.resource)}</td><td><b>${esc(a.name)}</b></td><td>${esc(a.slot||"")}</td>
+        <td><div class="developer-cell">${esc(developerFor(a.resource).name)}${developerBadge(developerFor(a.resource))}</div></td><td><b>${esc(a.name)}</b></td><td>${esc(a.slot||"")}</td>
         <td><span class="tag ${a.type==="Бизнес"?"biz":a.type==="Технический"?"tech":"vac"}">${esc(a.type)}</span></td>
         <td>${fmtShort(a.start)}</td><td>${fmtShort(a.end)}</td>
         <td>${a.qa?`<span class="qa-dot" style="background:${qaColor(a.qa)}"></span>${esc(a.qa)}`:""}</td>
@@ -450,7 +521,9 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     dataTable.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openEditor(b.dataset.edit));
   }
   function syncDatalists(){
-    resourceList.innerHTML=resources().map(x=>`<option value="${escAttr(x)}">`).join("");
+    const selected=fResource.value;
+    fResource.innerHTML=developers().map(d=>`<option value="${escAttr(d.id)}">${esc(d.name)}${d.role?` · ${esc(d.role)}`:""}</option>`).join("");
+    if(resources().includes(selected))fResource.value=selected;
     const known=[...new Set([...qas(),...Array.from({length:10},(_,i)=>`QA${i+1}`)])].sort((a,b)=>a.localeCompare(b,"ru",{numeric:true}));
     qaList.innerHTML=known.map(x=>`<option value="${escAttr(x)}">`).join("");
   }
@@ -469,11 +542,8 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     ]);
     if(sr.error) throw sr.error;
     if(ar.error) throw ar.error;
-    state.settings={
-      horizonStart:sr.data.horizon_start, quarters:sr.data.quarters,
-      businessSlots:sr.data.business_slots, techSlots:sr.data.tech_slots,
-      version:sr.data.version, updated_at:sr.data.updated_at, updated_by_email:sr.data.updated_by_email
-    };
+    developersAvailable=Array.isArray(sr.data.developers);
+    state.settings=dbToSettings(sr.data);
     state.activities=ar.data.map(dbToActivity);
     render();
     setSync("ok","Синхронизировано");
@@ -532,19 +602,93 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     if(!data){await loadRemote();throw new Error("CONFLICT");}
     state.activities=state.activities.filter(x=>x.id!==id); render(); setSync("ok","Сохранено");
   }
-  async function saveSettingsRemote(next){
+  async function saveSettingsRemote(next,expectedVersion=state.settings.version){
     setSync("busy","Сохраняю настройки…");
-    const {data,error}=await sb.from("roadmap_settings").update({
-      horizon_start:next.horizonStart,quarters:next.quarters,
-      business_slots:next.businessSlots,tech_slots:next.techSlots
-    }).eq("id",roadmapId).eq("version",state.settings.version).select().maybeSingle();
+    const patch={};
+    if("horizonStart" in next)patch.horizon_start=next.horizonStart;
+    if("quarters" in next)patch.quarters=next.quarters;
+    if("businessSlots" in next)patch.business_slots=next.businessSlots;
+    if("techSlots" in next)patch.tech_slots=next.techSlots;
+    if("developers" in next)patch.developers=next.developers;
+    const {data,error}=await sb.from("roadmap_settings").update(patch).eq("id",roadmapId).eq("version",expectedVersion).select().maybeSingle();
     if(error)throw error;
     if(!data){await loadRemote();throw new Error("CONFLICT");}
-    state.settings={
-      horizonStart:data.horizon_start,quarters:data.quarters,businessSlots:data.business_slots,techSlots:data.tech_slots,
-      version:data.version,updated_at:data.updated_at,updated_by_email:data.updated_by_email
-    };
+    state.settings=dbToSettings(data);
     render();setSync("ok","Настройки сохранены");
+  }
+
+  // ---------- Developers ----------
+  function renderDeveloperList(){
+    developerList.innerHTML=developers().map(d=>`<div class="developer-item"><div class="developer-cell"><span class="developer-name">${esc(d.name)}</span>${developerBadge(d)}</div><button type="button" class="small-btn" data-developer="${escAttr(d.id)}" ${savingDeveloper?"disabled":""}>Редактировать</button></div>`).join("");
+    developerList.querySelectorAll("[data-developer]").forEach(b=>b.onclick=()=>editDeveloper(b.dataset.developer));
+  }
+  function showDeveloperError(message){
+    developerError.textContent=message;
+    developerError.hidden=!message;
+  }
+  function editDeveloper(id=null){
+    if(savingDeveloper)return;
+    editingDeveloperId=id;
+    developerEditingVersion=state.settings.version;
+    const d=id?developerFor(id):{name:"",role:""};
+    developerName.value=d.name;
+    developerRole.value=d.role;
+    developerFormTitle.textContent=id?"Редактировать разработчика":"Новый разработчик";
+    saveDeveloper.textContent=id?"Сохранить":"Добавить";
+    showDeveloperError("");
+    developerName.focus();
+  }
+  function openDevelopers(id=null){
+    if(!canEdit)return;
+    developerReturnFocus=document.activeElement;
+    developersModal.classList.add("open");
+    renderDeveloperList();
+    editDeveloper(id);
+  }
+  function closeDeveloperEditor(){
+    if(savingDeveloper)return;
+    developersModal.classList.remove("open");
+    (developerReturnFocus?.isConnected?developerReturnFocus:manageDevelopers).focus();
+  }
+  function validateDevelopers(items){
+    if(!Array.isArray(items))throw new Error("Некорректный список разработчиков.");
+    const ids=new Set(),names=new Set();
+    return items.map(d=>{
+      if(!d||typeof d.id!=="string"||!d.id.trim()||typeof d.name!=="string"||!d.name.trim()||d.name.trim().length>80||!["","DS","Go"].includes(d.role)){
+        throw new Error("У разработчика должны быть ID, имя до 80 символов и направление DS или Go.");
+      }
+      const name=d.name.trim(),key=name.toLocaleLowerCase("ru-RU");
+      if(ids.has(d.id)||names.has(key))throw new Error("Разработчик с таким именем или ID уже существует.");
+      ids.add(d.id);names.add(key);
+      return {id:d.id,name,role:d.role};
+    });
+  }
+  async function saveDeveloperEditor(event){
+    event.preventDefault();
+    if(savingDeveloper)return;
+    showDeveloperError("");
+    if(!sb||!developersAvailable){
+      showDeveloperError("Управление разработчиками пока не подключено. Требуется обновление базы роадмапы.");
+      return;
+    }
+    if(!developerForm.reportValidity())return;
+    let next;
+    try{
+      const entry={id:editingDeveloperId||crypto.randomUUID(),name:developerName.value.trim(),role:developerRole.value};
+      next=validateDevelopers([...developers().filter(d=>d.id!==entry.id),entry]);
+    }catch(e){showDeveloperError(e.message);return;}
+    savingDeveloper=true;developerFields.disabled=true;newDeveloper.disabled=true;renderDeveloperList();
+    try{
+      await saveSettingsRemote({developers:next},developerEditingVersion);
+      savingDeveloper=false;
+      closeDeveloperEditor();
+      setSync("ok","Разработчик сохранён");
+    }catch(e){
+      setSync("err","Не удалось сохранить разработчика");
+      showDeveloperError(e.message==="CONFLICT"?"Список или настройки уже изменены. Выберите разработчика в списке заново или нажмите «+ Разработчик», чтобы загрузить актуальные данные.":"Ошибка сохранения: "+e.message);
+    }finally{
+      savingDeveloper=false;developerFields.disabled=false;newDeveloper.disabled=false;renderDeveloperList();
+    }
   }
 
   // ---------- Drag ----------
@@ -591,6 +735,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   // ---------- Editor ----------
   function openEditor(id=null,preset=null){
     if(!canEdit)return;
+    if(!resources().length){openDevelopers();return;}
     editingId=id;
     const a=id?state.activities.find(x=>x.id===id):(preset||{resource:resources()[0]||"Разработчик 1",name:"",slot:"",type:"Бизнес",start:fmt(new Date()),end:fmt(new Date()),qa:"",carry:false,status:"План",comment:"",version:null});
     editingVersion=a.version??null;
@@ -604,11 +749,12 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   function closeEditor(){editorModal.classList.remove("open");editingId=null;editingVersion=null;}
   async function saveEditor(){
     const obj={
-      resource:fResource.value.trim(),name:fName.value.trim(),slot:fSlot.value.trim(),type:fType.value,
+      resource:fResource.value,name:fName.value.trim(),slot:fSlot.value.trim(),type:fType.value,
       start:fStart.value,end:fEnd.value,qa:fType.value==="Отпуск"?"":fQa.value.trim(),
       carry:fCarry.value==="true",status:fStatus.value,comment:fComment.value.trim()
     };
     if(!obj.resource||!obj.name||!obj.start||!obj.end){alert("Заполни ресурс, название и даты.");return;}
+    if(!resources().includes(obj.resource)){alert("Выберите разработчика из списка.");return;}
     if(parseDate(obj.end)<parseDate(obj.start)){alert("Дата окончания раньше даты начала.");return;}
     if(!obj.slot&&obj.type!=="Отпуск")obj.slot=obj.name;
     saveActivity.disabled=true;
@@ -629,7 +775,9 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   async function importStateToCloud(x){
     if(!canEdit)throw new Error("Нет прав на редактирование");
     if(!x.settings||!Array.isArray(x.activities))throw new Error("Некорректный JSON");
-    if(!confirm("Импорт заменит все активности этой роадмапы в облаке. Продолжить?"))return;
+    const importedDevelopers=validateDevelopers(x.settings.developers??[]);
+    if(importedDevelopers.length&&!developersAvailable)throw new Error("Для импорта разработчиков требуется обновление базы роадмапы.");
+    if(!confirm("Импорт заменит все активности, разработчиков и настройки этой роадмапы в облаке. Продолжить?"))return;
     setSync("busy","Импорт…");
     const del=await sb.from("roadmap_activities").delete().eq("roadmap_id",roadmapId);
     if(del.error)throw del.error;
@@ -639,7 +787,8 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     }
     const upd=await sb.from("roadmap_settings").update({
       horizon_start:x.settings.horizonStart,quarters:x.settings.quarters,
-      business_slots:x.settings.businessSlots,tech_slots:x.settings.techSlots
+      business_slots:x.settings.businessSlots,tech_slots:x.settings.techSlots,
+      ...(developersAvailable?{developers:importedDevelopers}:{})
     }).eq("id",roadmapId);
     if(upd.error)throw upd.error;
     await loadRemote();
@@ -679,6 +828,19 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   // ---------- Controls ----------
   addActivity.onclick=()=>openEditor();
   addVacation.onclick=()=>openEditor(null,{resource:resources()[0]||"Разработчик 1",name:"Отпуск",slot:"",type:"Отпуск",start:fmt(new Date()),end:fmt(new Date()),qa:"",carry:false,status:"План",comment:""});
+  manageDevelopers.onclick=()=>openDevelopers();
+  newDeveloper.onclick=()=>editDeveloper();
+  closeDevelopers.onclick=closeDeveloperEditor;
+  developerForm.onsubmit=saveDeveloperEditor;
+  developersModal.addEventListener("click",e=>{if(e.target===developersModal)closeDeveloperEditor();});
+  developersModal.addEventListener("keydown",e=>{
+    if(e.key==="Escape"){e.preventDefault();closeDeveloperEditor();return;}
+    if(e.key!=="Tab")return;
+    const controls=[...developersModal.querySelectorAll("button,input,select")].filter(el=>!el.disabled&&!el.closest("fieldset:disabled"));
+    const first=controls[0],last=controls.at(-1);
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  });
   cancelEditor.onclick=closeEditor;
   editorModal.addEventListener("click",e=>{if(e.target===editorModal)closeEditor();});
   saveActivity.onclick=saveEditor;
