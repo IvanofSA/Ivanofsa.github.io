@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
 <title>Roadmap · Shared</title>
 <style>
 :root{
@@ -36,8 +38,9 @@ h1{font-size:24px;margin:0 0 4px}
 .scroll{overflow:auto;-webkit-overflow-scrolling:touch}
 .gantt{position:relative;min-width:900px}
 .header-row,.resource-row{display:grid;grid-template-columns:var(--label) auto}
-.left{position:sticky;left:0;z-index:30;background:#fff;border-right:1px solid var(--line);padding:0 10px;display:flex;align-items:center}
+.resource-label{position:sticky;left:0;z-index:30;background:#fff;border-right:1px solid var(--line);padding:0 10px;display:flex;align-items:center}
 .horizon{position:relative}
+.quarter-row,.month-row,.week-row{position:relative;overflow:hidden}
 .quarter-row{height:24px;border-bottom:1px solid var(--line);background:#eef2f6}
 .month-row{height:24px;border-bottom:1px solid var(--line);background:#f8fafc}
 .week-row{height:36px;border-bottom:1px solid var(--line);background:#fff}
@@ -67,7 +70,8 @@ h1{font-size:24px;margin:0 0 4px}
 .bar .dates{font-size:9px;opacity:.92;margin-top:3px;white-space:nowrap}
 .qa-strip{position:absolute;left:0;right:0;bottom:0;height:6px;opacity:.98}
 .handle{position:absolute;top:0;bottom:0;width:7px;cursor:ew-resize;z-index:7}
-.handle.left{left:0}.handle.right{right:0}
+.handle.resize-left{left:0}.handle.resize-right{right:0}
+.handle:after{content:"";position:absolute;top:12px;bottom:12px;left:3px;width:1px;background:rgba(255,255,255,.6)}
 .drag-area{position:absolute;left:7px;right:7px;top:0;bottom:0;cursor:grab}
 .bar.dragging .drag-area{cursor:grabbing}
 .today{position:absolute;top:0;bottom:0;width:2px;background:#ef4444;z-index:20;pointer-events:none}
@@ -89,8 +93,16 @@ tr:hover td{background:#fafafa}
 .modal.open{display:flex}
 .dialog{width:min(720px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
 .dialog h2{margin:0 0 12px;font-size:18px}
-.developer-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow:auto;margin:12px 0}
-.developer-item{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #e4e7ec;border-radius:8px;padding:8px}
+.developer-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto;margin:12px 0}
+.developer-item{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border:1px solid #e4e7ec;border-radius:8px;padding:8px}
+.developer-item.is-hidden{background:#f8fafc}
+.developer-item.drop-target{outline:2px solid var(--go);outline-offset:-2px}
+.developer-visibility{display:flex;align-items:center;gap:9px;flex:1;min-width:140px;cursor:pointer}
+.developer-visibility input{width:18px;height:18px;flex-shrink:0}
+.developer-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.developer-grip{cursor:grab;touch-action:auto}
+.developer-grip:active{cursor:grabbing}
+.developer-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .developer-item .developer-name{overflow-wrap:anywhere;min-width:0}
 .developer-item .small-btn{flex-shrink:0}
 .developer-form{border:0;padding:0;margin:14px 0 0;min-width:0}
@@ -102,6 +114,13 @@ tr:hover td{background:#fafafa}
 .qa-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
 .notice{font-size:11px;color:var(--muted);padding:8px 12px;border-top:1px solid #eaecf0;background:#fafafa}
 .hidden{display:none!important}
+[hidden]{display:none!important}
+.access-gate{min-height:100vh;display:grid;place-items:center;padding:20px}
+.access-gate .dialog{max-width:430px}
+.access-gate .field{margin:12px 0}
+.filterbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.filterbar select{border:1px solid var(--line);border-radius:7px;padding:7px;background:#fff}
+.empty-state{padding:20px;color:var(--muted);font-size:13px}
 @media(max-width:800px){
   .app{padding:8px}.topbar{align-items:stretch}.actions{width:100%}.btn{flex:1}.settings{gap:8px}.formgrid{grid-template-columns:1fr}
 }
@@ -127,12 +146,25 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
 </head>
 <body>
 
-<script id="initial-data" type="application/json">{"version": 1, "settings": {"horizonStart": "2026-09-28", "quarters": 1, "businessSlots": 4, "techSlots": 2, "version": 1, "updated_at": null, "updated_by_email": "seed"}, "activities": [{"id": "a1", "resource": "Разработчик 1", "name": "Объявления", "slot": "Объявления", "type": "Бизнес", "start": "2026-10-01", "end": "2026-11-02", "qa": "QA2", "carry": false, "status": "В работе", "comment": "2 разработчика до 02.11", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a2", "resource": "Разработчик 1", "name": "E2E + доработки", "slot": "Объявления", "type": "Бизнес", "start": "2026-11-02", "end": "2026-12-04", "qa": "QA2", "carry": false, "status": "План", "comment": "", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a3", "resource": "Разработчик 1", "name": "Перенос категорий в мету", "slot": "Перенос категорий", "type": "Бизнес", "start": "2026-12-05", "end": "2026-12-15", "qa": "QA1", "carry": false, "status": "План", "comment": "~1,5 недели", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a4", "resource": "Разработчик 2", "name": "Объявления", "slot": "Объявления", "type": "Бизнес", "start": "2026-10-01", "end": "2026-11-02", "qa": "QA2", "carry": false, "status": "В работе", "comment": "2 разработчика до 02.11", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a5", "resource": "Разработчик 2", "name": "Отпуск", "slot": "", "type": "Отпуск", "start": "2026-11-07", "end": "2026-11-15", "qa": "", "carry": false, "status": "План", "comment": "Рабочие дни 09.11–13.11", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a6", "resource": "Разработчик 2", "name": "Отели · помощь", "slot": "Отели", "type": "Бизнес", "start": "2026-11-16", "end": "2026-11-27", "qa": "QA1", "carry": false, "status": "План", "comment": "Замещение Разработчика 3", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a7", "resource": "Разработчик 2", "name": "Recall", "slot": "Recall", "type": "Бизнес", "start": "2026-12-01", "end": "2026-12-31", "qa": "QA2", "carry": false, "status": "План", "comment": "~1 месяц", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a8", "resource": "Разработчик 3", "name": "Отели", "slot": "Отели", "type": "Бизнес", "start": "2026-10-05", "end": "2026-11-30", "qa": "QA1", "carry": false, "status": "В работе", "comment": "", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a9", "resource": "Разработчик 3", "name": "Отпуск", "slot": "", "type": "Отпуск", "start": "2026-11-14", "end": "2026-11-29", "qa": "", "carry": false, "status": "План", "comment": "Рабочие дни 16.11–27.11", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a10", "resource": "Разработчик 4", "name": "C2C", "slot": "C2C", "type": "Бизнес", "start": "2026-10-05", "end": "2026-10-31", "qa": "QA2", "carry": false, "status": "План", "comment": "", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a11", "resource": "Разработчик 4", "name": "Украина", "slot": "Украина", "type": "Бизнес", "start": "2026-11-02", "end": "2026-11-11", "qa": "QA2", "carry": false, "status": "План", "comment": "~1,5 недели", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a12", "resource": "Разработчик 4", "name": "Оркестратор", "slot": "Оркестратор", "type": "Технический", "start": "2026-11-12", "end": "2026-11-29", "qa": "QA2", "carry": false, "status": "План", "comment": "~2,5 недели", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a13", "resource": "Разработчик 5", "name": "Отпуск", "slot": "", "type": "Отпуск", "start": "2026-10-03", "end": "2026-10-18", "qa": "", "carry": false, "status": "План", "comment": "Рабочие дни 05.10–18.10", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a14", "resource": "Разработчик 5", "name": "Типы", "slot": "Типы", "type": "Бизнес", "start": "2026-10-19", "end": "2026-11-18", "qa": "QA2", "carry": false, "status": "План", "comment": "~1 месяц", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a15", "resource": "Разработчик 5", "name": "Схлопывание сервисов", "slot": "Схлопывание сервисов", "type": "Технический", "start": "2026-11-19", "end": "2026-12-31", "qa": "QA1", "carry": true, "status": "План", "comment": "~2 месяца, хвост уходит в Q1", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a16", "resource": "Разработчик 6", "name": "Отпуск", "slot": "", "type": "Отпуск", "start": "2026-10-03", "end": "2026-10-18", "qa": "", "carry": false, "status": "План", "comment": "Рабочие дни 05.10–18.10", "version": 1, "updated_at": null, "updated_by_email": "seed"}, {"id": "a17", "resource": "Разработчик 6", "name": "VLM", "slot": "VLM", "type": "Бизнес", "start": "2026-10-19", "end": "2026-11-30", "qa": "QA1", "carry": false, "status": "План", "comment": "", "version": 1, "updated_at": null, "updated_by_email": "seed"}]}</script>
-<div class="app">
+<main class="access-gate" id="accessGate">
+  <div class="dialog auth-dialog">
+    <h1>Командная роадмапа</h1>
+    <p>Вход для участников команды. Используйте выданные вам email и пароль.</p>
+    <form id="loginForm">
+      <div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" autocomplete="username" required></div>
+      <div class="field"><label for="loginPassword">Пароль</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+      <button class="btn primary" id="loginSubmit" type="submit" disabled>Войти</button>
+    </form>
+    <p id="accessMessage" role="status" aria-live="polite">Подключение…</p>
+    <button class="btn" id="retryAccess" type="button" hidden>Повторить загрузку</button>
+    <button class="btn" id="gateSignOut" type="button" hidden>Выйти</button>
+  </div>
+</main>
+<div class="app" id="roadmapApp" hidden>
   <div class="topbar">
     <div>
-      <h1>Q4 2026 · Командная роадмапа</h1>
-      <div class="sub">GitHub Pages + Supabase · общая синхронизация без авторизации</div>
+      <h1 id="roadmapTitle">Командная роадмапа</h1>
+      <div class="sub">Общий план команды · изменения синхронизируются автоматически</div>
     </div>
     <div class="actions">
       <button class="btn primary edit-control" id="addActivity">+ Активность</button>
@@ -150,7 +182,8 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     <b id="syncText">Инициализация…</b>
     <span id="lastChange" class="last-change"></span>
     <span class="cloud-spacer"></span>
-    <span class="user-pill">общий доступ без авторизации</span>
+    <span class="user-pill" id="currentUser"></span>
+    <button class="small-btn" id="signOut" type="button">Выйти</button>
   </div>
 
   <div class="settings">
@@ -161,21 +194,26 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     <div class="field"><label>&nbsp;</label><button id="applySettings" class="btn edit-control">Применить</button></div>
   </div>
 
+  <div class="filterbar">
+    <label for="teamFilter">Команда</label>
+    <select id="teamFilter"><option value="all">Все команды</option><option value="DS">DS</option><option value="Go">Go</option><option value="unassigned">Без направления</option></select>
+    <span class="sub" id="filterSummary" aria-live="polite"></span>
+  </div>
   <div class="legend" id="legend"></div>
 
   <div class="panel">
-    <div class="panel-head"><strong>Роадмапа Q4 — общий план</strong><span>Изменения сохраняются в Supabase и появляются у остальных автоматически.</span></div>
+    <div class="panel-head"><strong id="ganttTitle">Роадмапа — общий план</strong><span>Изменения сохраняются в Supabase и появляются у остальных автоматически.</span></div>
     <div class="scroll"><div id="gantt" class="gantt"></div></div>
     <div class="notice">Тяни за середину — двигай проект. За края — меняй начало/конец. Шаг 1 день. Тонкая цветная полоса внутри проекта — назначенный QA.</div>
   </div>
 
   <div class="panel">
-    <div class="panel-head"><strong>Контроль capacity</strong><span>Бизнес/тех считаются по уникальным слотам проектов. QA — по параллельным слотам.</span></div>
+    <div class="panel-head"><strong>Контроль capacity</strong><span>Показаны слоты видимых разработчиков выбранной команды. Лимиты бизнес/тех — общие для роадмапы. QA — по слотам за неделю.</span></div>
     <div class="scroll"><div id="capacity" class="capacity"></div></div>
   </div>
 
   <div class="panel">
-    <div class="panel-head"><strong>Данные</strong><span>Время изменения сохраняется; авторизация и имя редактора пока отключены.</span></div>
+    <div class="panel-head"><strong>Данные</strong><span>Активности выбранной команды. Экспорт JSON содержит полную роадмапу.</span></div>
     <div class="table-wrap"><table id="dataTable"></table></div>
   </div>
 </div>
@@ -183,7 +221,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
 <div class="modal" id="configModal">
   <div class="dialog auth-dialog">
     <h2>Нужно настроить Supabase</h2>
-    <p>Заполните <b>config.js</b> рядом с index.html. Авторизация не используется — доступ регулируется RLS-политиками Supabase:</p>
+    <p>Заполните <b>static/js/config.js</b> и примените миграцию доступа в Supabase. Данные доступны только участникам роадмапы после входа:</p>
     <div class="config-code">window.ROADMAP_CONFIG = {
   supabaseUrl: "https://PROJECT.supabase.co",
   supabaseKey: "sb_publishable_...",
@@ -219,9 +257,13 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
 <div class="modal" id="developersModal" role="dialog" aria-modal="true" aria-labelledby="developersTitle">
   <div class="dialog">
     <h2 id="developersTitle">Разработчики</h2>
-    <p class="sub">Добавляйте участников и выбирайте направление. Имя и цвет обновляются во всех их активностях.</p>
-    <div class="developer-list" id="developerList"></div>
-    <button class="btn" id="newDeveloper" type="button">+ Разработчик</button>
+    <p class="sub">Общий вид для всей команды. Снимите флажок, чтобы скрыть разработчика, или измените порядок стрелками и перетаскиванием за ⋮⋮. Изменения сохраняются сразу. Активности скрытых разработчиков сохраняются.</p>
+    <div class="developer-list" id="developerList" role="list" aria-label="Порядок и видимость разработчиков"></div>
+    <div class="developer-toolbar">
+      <button class="btn" id="newDeveloper" type="button">+ Разработчик</button>
+      <button class="btn" id="showAllDevelopers" type="button">Показать всех</button>
+    </div>
+    <p class="sub" id="developerViewStatus" role="status" aria-live="polite"></p>
     <form id="developerForm">
       <fieldset class="developer-form" id="developerFields">
         <legend id="developerFormTitle">Новый разработчик</legend>
@@ -247,13 +289,11 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   const DAY_PX = 14;
   const WEEK_PX = DAY_PX * 7;
   const QA_COLORS = ["#8b5cf6","#14b8a6","#ec4899","#f97316","#06b6d4","#84cc16","#a855f7","#eab308","#64748b","#dc2626"];
-  const CACHE_KEY = "roadmap-cloud-cache-v1";
   const cfg = window.ROADMAP_CONFIG || {};
-  const initialScript = document.getElementById("initial-data");
-  const INITIAL = JSON.parse(initialScript.textContent);
+  // No roadmap data is bundled or restored before an authenticated read.
+  const emptyState = () => ({settings:{horizonStart:fmt(new Date()),quarters:1,businessSlots:4,techSlots:2,developers:[]},activities:[]});
   const roadmapId = cfg.roadmapId || "main";
 
-  const clone = x => JSON.parse(JSON.stringify(x));
   const parseDate = s => new Date(s + "T00:00:00");
   const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   const fmtShort = s => { const d=parseDate(s); return `${String(d.getDate()).padStart(2,"0")}.${String(d.getMonth()+1).padStart(2,"0")}`; };
@@ -277,9 +317,14 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     developers:r.developers||[],version:r.version,updated_at:r.updated_at,updated_by_email:r.updated_by_email
   });
 
-  let state = clone(INITIAL);
+  let state = emptyState();
   let sb = null;
-  let canEdit = true;
+  let canEdit = false;
+  let sessionUser = null;
+  let sessionEpoch = 0;
+  let loadingSession = false;
+  let dataReady = false;
+  let sessionClosed = false;
   let editingId = null;
   let editingVersion = null;
   let drag = null;
@@ -292,19 +337,14 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   let developerEditingVersion = null;
   let savingDeveloper = false;
   let developerReturnFocus = null;
+  let developerDragId = null;
 
-  // Restore a cached view while the cloud session is being established.
-  try{
-    const cached=JSON.parse(localStorage.getItem(CACHE_KEY)||"null");
-    if(cached?.settings && Array.isArray(cached.activities)) state=cached;
-  }catch(e){}
+  // Remove the cache left by the previously public version.
+  try{localStorage.removeItem("roadmap-cloud-cache-v1");}catch(e){}
 
   function setSync(kind,text){
     syncDot.className="sync-dot "+(kind||"");
     syncText.textContent=text;
-  }
-  function cacheState(){
-    try{ localStorage.setItem(CACHE_KEY,JSON.stringify(state)); }catch(e){}
   }
   function latestChange(){
     const values=[
@@ -315,8 +355,8 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     lastChange.textContent=last ? `Последнее изменение: ${new Date(last).toLocaleString("ru-RU")}` : "";
   }
   function setEditability(){
-    canEdit = true;
-    document.querySelectorAll(".edit-control").forEach(el=>el.disabled=false);
+    canEdit = !!sessionUser && dataReady;
+    document.querySelectorAll(".edit-control").forEach(el=>el.disabled=!canEdit);
   }
   function qaColor(name){
     if(!name) return "transparent";
@@ -343,7 +383,10 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     for(const a of state.activities){
       if(a.resource&&!entries.has(a.resource))entries.set(a.resource,{id:a.resource,name:a.resource,role:""});
     }
-    return [...entries.values()].sort((a,b)=>a.name.localeCompare(b.name,"ru",{numeric:true}));
+    return [...entries.values()].sort((a,b)=>{
+      const position=d=>Number.isSafeInteger(d.order)&&d.order>=0?d.order:Infinity;
+      return position(a)-position(b)||a.name.localeCompare(b.name,"ru",{numeric:true});
+    });
   }
   function developerFor(id){
     return (state.settings.developers||[]).find(d=>d.id===id)||{id,name:id,role:""};
@@ -355,8 +398,16 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   function resources(){
     return developers().map(d=>d.id);
   }
+  function visibleDevelopers(){
+    const selected=teamFilter.value;
+    return developers().filter(d=>!d.hidden&&(selected==="all"||(selected==="unassigned"?!d.role:d.role===selected)));
+  }
+  function visibleActivities(){
+    const ids=new Set(visibleDevelopers().map(d=>d.id));
+    return state.activities.filter(a=>ids.has(a.resource));
+  }
   function qas(){
-    return [...new Set(state.activities.map(a=>a.qa).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ru",{numeric:true}));
+    return [...new Set(visibleActivities().map(a=>a.qa).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ru",{numeric:true}));
   }
   function packLevels(items){
     const sorted=[...items].sort((a,b)=>a.start.localeCompare(b.start)||a.end.localeCompare(b.end));
@@ -371,8 +422,13 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   }
 
   function render(){
-    cacheState();
+    if(!dataReady)return;
+    setEditability();
     syncSettings();
+    const h=horizon(),period=`${fmtShort(fmt(h.start))}.${h.start.getFullYear()} — ${fmtShort(fmt(h.quarterEnd))}.${h.quarterEnd.getFullYear()}`;
+    roadmapTitle.textContent=`Командная роадмапа · ${period}`;
+    ganttTitle.textContent=`Роадмапа · ${period}`;
+    filterSummary.textContent=`Разработчиков: ${visibleDevelopers().length} из ${developers().length} · активностей: ${visibleActivities().length} · скрыто вручную: ${developers().filter(d=>d.hidden).length}`;
     renderLegend();
     renderGantt();
     renderCapacity();
@@ -380,7 +436,6 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     renderDeveloperList();
     syncDatalists();
     latestChange();
-    setEditability();
   }
   function syncSettings(){
     horizonStart.value=state.settings.horizonStart;
@@ -401,7 +456,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   }
   function buildHeader(container,h){
     const wrap=document.createElement("div"); wrap.className="header-row";
-    wrap.innerHTML=`<div class="left" style="height:84px;align-items:center;font-size:11px;font-weight:800;background:#f8fafc">Ресурс</div>`;
+    wrap.innerHTML=`<div class="resource-label" style="height:84px;align-items:center;font-size:11px;font-weight:800;background:#f8fafc">Ресурс</div>`;
     const hz=document.createElement("div"); hz.className="horizon"; hz.style.width=h.width+"px";
     hz.innerHTML=`<div class="quarter-row"></div><div class="month-row"></div><div class="week-row"></div>`;
     wrap.appendChild(hz); container.appendChild(wrap);
@@ -409,7 +464,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     for(let i=0;i<h.weeks;i++){
       const ws=addDays(h.start,i*7);
       const d=document.createElement("div"); d.className="weekseg"; d.style.left=(i*WEEK_PX)+"px"; d.style.width=WEEK_PX+"px";
-      d.innerHTML=`<b>${String(ws.getDate()).padStart(2,"0")}.${String(ws.getMonth()+1).padStart(2,"0")}</b><br><span style="color:#98a2b3">Пн–Вс</span>`;
+      d.innerHTML=`<b>${String(ws.getDate()).padStart(2,"0")}.${String(ws.getMonth()+1).padStart(2,"0")}</b><br><span style="color:#98a2b3">${ws.toLocaleDateString("ru-RU",{weekday:"short"})}–${addDays(ws,6).toLocaleDateString("ru-RU",{weekday:"short"})}</span>`;
       wrow.appendChild(d);
     }
     let segStart=new Date(h.start), key=`${segStart.getFullYear()}-${segStart.getMonth()}`;
@@ -444,12 +499,15 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   function renderGantt(){
     gantt.innerHTML="";
     const h=horizon(); gantt.style.width=(190+h.width)+"px"; buildHeader(gantt,h);
-    for(const res of resources()){
+    if(!visibleDevelopers().length){
+      const empty=document.createElement("div");empty.className="empty-state";empty.textContent="Нет видимых разработчиков. Измените фильтр команды или откройте «Разработчики», чтобы вернуть скрытые строки.";gantt.appendChild(empty);
+    }
+    for(const {id:res} of visibleDevelopers()){
       const items=state.activities.filter(a=>a.resource===res && overlap(a.start,a.end,fmt(h.start),fmt(h.end)));
       const pack=packLevels(items), laneH=pack.count*50+10;
       const developer=developerFor(res), role=developer.role==="DS"?"ds":developer.role==="Go"?"go":"unknown";
       const row=document.createElement("div"); row.className=`resource-row role-${role}`;
-      const left=document.createElement("div"); left.className="left resource-name"; left.style.height=laneH+"px";
+      const left=document.createElement("div"); left.className="resource-label resource-name"; left.style.height=laneH+"px";
       const edit=document.createElement("button"); edit.className="resource-button";
       edit.title=`Редактировать разработчика: ${developer.name}`;
       edit.innerHTML=`<span class="developer-name">${esc(developer.name)}</span>${developerBadge(developer)}`;
@@ -470,7 +528,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
         bar.style.left=leftPx+"px"; bar.style.width=widthPx+"px"; bar.style.top=(level*50+6)+"px";
         bar.dataset.id=a.id;
         bar.title=`${a.name}\n${a.start} — ${a.end}`;
-        bar.innerHTML=`<div class="handle left" data-mode="resize-left"></div><div class="drag-area" data-mode="move"></div><div class="handle right" data-mode="resize-right"></div>
+        bar.innerHTML=`<div class="handle resize-left" data-mode="resize-left"></div><div class="drag-area" data-mode="move"></div><div class="handle resize-right" data-mode="resize-right"></div>
           <div class="name">${esc(a.name)}</div><div class="dates">${fmtShort(a.start)}–${fmtShort(a.end)}${a.qa?` · ${esc(a.qa)}`:""}</div>${a.qa?`<div class="qa-strip" style="background:${qaColor(a.qa)}"></div>`:""}`;
         bar.addEventListener("click",e=>{ if(Date.now()<suppressClickUntil||!canEdit)return; if(!e.target.classList.contains("handle"))openEditor(a.id);});
         if(canEdit) bar.addEventListener("pointerdown",startDrag);
@@ -481,7 +539,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   }
 
   function weeklyStats(ws){
-    const s=fmt(ws),we=fmt(addDays(ws,6)),active=state.activities.filter(a=>overlap(a.start,a.end,s,we));
+    const s=fmt(ws),we=fmt(addDays(ws,6)),active=visibleActivities().filter(a=>overlap(a.start,a.end,s,we));
     const unique=type=>new Set(active.filter(a=>a.type===type).map(a=>a.slot||a.name)).size;
     const vacations=new Set(active.filter(a=>a.type==="Отпуск").map(a=>a.resource)).size;
     const qaStats={};
@@ -507,7 +565,8 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     }
   }
   function renderTable(){
-    const rows=[...state.activities].sort((a,b)=>developerFor(a.resource).name.localeCompare(developerFor(b.resource).name,"ru",{numeric:true})||a.start.localeCompare(b.start));
+    const order=new Map(visibleDevelopers().map((d,i)=>[d.id,i]));
+    const rows=visibleActivities().sort((a,b)=>order.get(a.resource)-order.get(b.resource)||a.start.localeCompare(b.start));
     dataTable.innerHTML=`<thead><tr><th>Ресурс</th><th>Проект</th><th>Слот</th><th>Тип</th><th>Начало</th><th>Конец</th><th>QA</th><th>Перенос</th><th>Статус</th><th>Комментарий</th><th>Обновлено</th><th></th></tr></thead>
       <tbody>${rows.map(a=>`<tr>
         <td><div class="developer-cell">${esc(developerFor(a.resource).name)}${developerBadge(developerFor(a.resource))}</div></td><td><b>${esc(a.name)}</b></td><td>${esc(a.slot||"")}</td>
@@ -516,7 +575,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
         <td>${a.qa?`<span class="qa-dot" style="background:${qaColor(a.qa)}"></span>${esc(a.qa)}`:""}</td>
         <td>${a.carry?"Да":""}</td><td>${esc(a.status||"")}</td><td>${esc(a.comment||"")}</td>
         <td>${a.updated_at?new Date(a.updated_at).toLocaleString("ru-RU"):""}</td>
-        <td><button class="small-btn" data-edit="${a.id}">Править</button></td>
+        <td><button class="small-btn" data-edit="${escAttr(a.id)}">Править</button></td>
       </tr>`).join("")}</tbody>`;
     dataTable.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openEditor(b.dataset.edit));
   }
@@ -535,22 +594,27 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
       !String(cfg.supabaseKey).includes("YOUR_");
   }
   async function loadRemote(){
+    if(!sessionUser)throw new Error("Сначала войдите в систему.");
+    const epoch=sessionEpoch;
     setSync("busy","Синхронизация…");
     const [sr,ar]=await Promise.all([
       sb.from("roadmap_settings").select("*").eq("id",roadmapId).single(),
       sb.from("roadmap_activities").select("*").eq("roadmap_id",roadmapId).order("resource").order("start_date")
     ]);
+    if(epoch!==sessionEpoch)return;
     if(sr.error) throw sr.error;
     if(ar.error) throw ar.error;
     developersAvailable=Array.isArray(sr.data.developers);
     state.settings=dbToSettings(sr.data);
     state.activities=ar.data.map(dbToActivity);
+    dataReady=true;
     render();
     setSync("ok","Синхронизировано");
   }
   function scheduleRemoteReload(){
     clearTimeout(reloadTimer);
     reloadTimer=setTimeout(async()=>{
+      if(!sessionUser||!dataReady)return;
       if(drag){pendingRealtimeReload=true;return;}
       try{await loadRemote();}catch(e){console.error(e);setSync("err","Ошибка синхронизации");}
     },180);
@@ -566,6 +630,8 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
       });
   }
   async function updateActivityRemote(id,expectedVersion,patch){
+    requireAccess();
+    const epoch=sessionEpoch;
     setSync("busy","Сохраняю…");
     const dbPatch={};
     if("resource" in patch)dbPatch.resource=patch.resource;
@@ -579,6 +645,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     if("status" in patch)dbPatch.status=patch.status;
     if("comment" in patch)dbPatch.comment=patch.comment||null;
     const {data,error}=await sb.from("roadmap_activities").update(dbPatch).eq("id",id).eq("version",expectedVersion).select().maybeSingle();
+    if(epoch!==sessionEpoch)throw new Error("Сеанс завершён.");
     if(error)throw error;
     if(!data){
       await loadRemote();
@@ -590,19 +657,27 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     return data;
   }
   async function insertActivityRemote(obj){
+    requireAccess();
+    const epoch=sessionEpoch;
     setSync("busy","Сохраняю…");
     const {data,error}=await sb.from("roadmap_activities").insert(activityToDb(obj)).select().single();
+    if(epoch!==sessionEpoch)throw new Error("Сеанс завершён.");
     if(error)throw error;
     state.activities.push(dbToActivity(data)); render(); setSync("ok","Сохранено");
   }
   async function deleteActivityRemote(id,expectedVersion){
+    requireAccess();
+    const epoch=sessionEpoch;
     setSync("busy","Удаляю…");
     const {data,error}=await sb.from("roadmap_activities").delete().eq("id",id).eq("version",expectedVersion).select("id").maybeSingle();
+    if(epoch!==sessionEpoch)throw new Error("Сеанс завершён.");
     if(error)throw error;
     if(!data){await loadRemote();throw new Error("CONFLICT");}
     state.activities=state.activities.filter(x=>x.id!==id); render(); setSync("ok","Сохранено");
   }
   async function saveSettingsRemote(next,expectedVersion=state.settings.version){
+    requireAccess();
+    const epoch=sessionEpoch;
     setSync("busy","Сохраняю настройки…");
     const patch={};
     if("horizonStart" in next)patch.horizon_start=next.horizonStart;
@@ -611,6 +686,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     if("techSlots" in next)patch.tech_slots=next.techSlots;
     if("developers" in next)patch.developers=next.developers;
     const {data,error}=await sb.from("roadmap_settings").update(patch).eq("id",roadmapId).eq("version",expectedVersion).select().maybeSingle();
+    if(epoch!==sessionEpoch)throw new Error("Сеанс завершён.");
     if(error)throw error;
     if(!data){await loadRemote();throw new Error("CONFLICT");}
     state.settings=dbToSettings(data);
@@ -619,8 +695,86 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
 
   // ---------- Developers ----------
   function renderDeveloperList(){
-    developerList.innerHTML=developers().map(d=>`<div class="developer-item"><div class="developer-cell"><span class="developer-name">${esc(d.name)}</span>${developerBadge(d)}</div><button type="button" class="small-btn" data-developer="${escAttr(d.id)}" ${savingDeveloper?"disabled":""}>Редактировать</button></div>`).join("");
+    const items=developers(),disabled=savingDeveloper||!canEdit;
+    developerList.innerHTML=items.map((d,i)=>`<div class="developer-item ${d.hidden?"is-hidden":""}" data-row="${escAttr(d.id)}" role="listitem">
+      <label class="developer-visibility"><input type="checkbox" data-visible="${escAttr(d.id)}" aria-label="Показывать ${escAttr(d.name)}" ${d.hidden?"":"checked"} ${disabled?"disabled":""}>
+        <span class="developer-cell"><span class="developer-name">${esc(d.name)}</span>${developerBadge(d)}${d.hidden?'<span class="sub">Скрыт</span>':""}</span>
+      </label>
+      <div class="developer-actions">
+        <button type="button" class="small-btn developer-grip" draggable="${!disabled}" data-grip="${escAttr(d.id)}" aria-label="Перетащить ${escAttr(d.name)}" title="Перетащите строку или используйте стрелки" ${disabled?"disabled":""}>⋮⋮</button>
+        <button type="button" class="small-btn" data-move="${escAttr(d.id)}" data-direction="-1" aria-label="Поднять ${escAttr(d.name)}" ${disabled||i===0?"disabled":""}>↑</button>
+        <button type="button" class="small-btn" data-move="${escAttr(d.id)}" data-direction="1" aria-label="Опустить ${escAttr(d.name)}" ${disabled||i===items.length-1?"disabled":""}>↓</button>
+        <button type="button" class="small-btn" data-developer="${escAttr(d.id)}" ${disabled?"disabled":""}>Редактировать</button>
+      </div>
+    </div>`).join("");
+    showAllDevelopers.disabled=disabled||!items.some(d=>d.hidden);
     developerList.querySelectorAll("[data-developer]").forEach(b=>b.onclick=()=>editDeveloper(b.dataset.developer));
+    developerList.querySelectorAll("[data-visible]").forEach(b=>b.onchange=()=>changeDeveloperView("visibility",b.dataset.visible,!b.checked));
+    developerList.querySelectorAll("[data-move]").forEach(b=>b.onclick=()=>changeDeveloperView("move",b.dataset.move,Number(b.dataset.direction)));
+    developerList.querySelectorAll("[data-grip]").forEach(b=>{
+      b.ondragstart=e=>{
+        if(savingDeveloper||!canEdit){e.preventDefault();return;}
+        developerDragId=b.dataset.grip;
+        e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",developerDragId);
+      };
+      b.ondragend=clearDeveloperDrag;
+    });
+    developerList.querySelectorAll("[data-row]").forEach(row=>{
+      row.ondragover=e=>{
+        if(!developerDragId||savingDeveloper||row.dataset.row===developerDragId)return;
+        e.preventDefault();e.dataTransfer.dropEffect="move";row.classList.add("drop-target");
+      };
+      row.ondragleave=()=>row.classList.remove("drop-target");
+      row.ondrop=e=>{
+        e.preventDefault();
+        const id=developerDragId;clearDeveloperDrag();
+        if(id)return changeDeveloperView("drop",id,row.dataset.row);
+      };
+    });
+  }
+  function clearDeveloperDrag(){
+    developerDragId=null;
+    developerList.querySelectorAll(".drop-target").forEach(el=>el.classList.remove("drop-target"));
+  }
+  function setDeveloperBusy(busy){
+    savingDeveloper=busy;developerFields.disabled=busy;newDeveloper.disabled=busy;
+    renderDeveloperList();
+  }
+  async function changeDeveloperView(action,id,value){
+    if(!canEdit||savingDeveloper)return;
+    showDeveloperError("");
+    if(!developersAvailable){
+      showDeveloperError("Управление разработчиками пока не подключено. Требуется обновление базы роадмапы.");renderDeveloperList();return;
+    }
+    let next=developers().map(d=>({...d}));
+    const index=next.findIndex(d=>d.id===id);
+    if(action==="show-all")next.forEach(d=>d.hidden=false);
+    else if(index<0)return;
+    else if(action==="visibility")next[index].hidden=value;
+    else{
+      const target=action==="move"?index+value:next.findIndex(d=>d.id===value);
+      if(target<0||target>=next.length||target===index)return;
+      next.splice(target,0,next.splice(index,1)[0]);
+    }
+    const expectedVersion=state.settings.version,formIsCurrent=developerEditingVersion===expectedVersion;
+    const epoch=sessionEpoch,scrollTop=developerList.scrollTop;
+    setDeveloperBusy(true);developerViewStatus.textContent="Сохраняю общий вид…";
+    try{
+      next=validateDevelopers(next.map((d,order)=>({...d,order})));
+      await saveSettingsRemote({developers:next},expectedVersion);
+      if(formIsCurrent)developerEditingVersion=state.settings.version;
+      developerViewStatus.textContent="Общий вид сохранён для всей команды.";
+    }catch(e){
+      if(epoch!==sessionEpoch)return;
+      developerViewStatus.textContent="Вид не сохранён.";
+      showDeveloperError(e.message==="CONFLICT"?"Список уже изменён другим участником. Загружена актуальная версия — повторите изменение.":"Ошибка сохранения вида: "+e.message);
+    }finally{
+      if(epoch===sessionEpoch){
+        setDeveloperBusy(false);developerList.scrollTop=scrollTop;
+        const control=[...developerList.querySelectorAll("[data-visible]")].find(el=>el.dataset.visible===id);
+        (control||newDeveloper).focus();
+      }
+    }
   }
   function showDeveloperError(message){
     developerError.textContent=message;
@@ -653,19 +807,21 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   function validateDevelopers(items){
     if(!Array.isArray(items))throw new Error("Некорректный список разработчиков.");
     const ids=new Set(),names=new Set();
-    return items.map(d=>{
+    return items.map((d,index)=>{
       if(!d||typeof d.id!=="string"||!d.id.trim()||typeof d.name!=="string"||!d.name.trim()||d.name.trim().length>80||!["","DS","Go"].includes(d.role)){
         throw new Error("У разработчика должны быть ID, имя до 80 символов и направление DS или Go.");
       }
       const name=d.name.trim(),key=name.toLocaleLowerCase("ru-RU");
       if(ids.has(d.id)||names.has(key))throw new Error("Разработчик с таким именем или ID уже существует.");
       ids.add(d.id);names.add(key);
-      return {id:d.id,name,role:d.role};
+      if(d.hidden!==undefined&&typeof d.hidden!=="boolean")throw new Error("Некорректная видимость разработчика.");
+      if(d.order!==undefined&&(!Number.isSafeInteger(d.order)||d.order<0))throw new Error("Некорректная позиция разработчика.");
+      return {id:d.id,name,role:d.role,hidden:d.hidden===true,order:d.order??index};
     });
   }
   async function saveDeveloperEditor(event){
     event.preventDefault();
-    if(savingDeveloper)return;
+    if(savingDeveloper||!canEdit)return;
     showDeveloperError("");
     if(!sb||!developersAvailable){
       showDeveloperError("Управление разработчиками пока не подключено. Требуется обновление базы роадмапы.");
@@ -674,10 +830,13 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     if(!developerForm.reportValidity())return;
     let next;
     try{
-      const entry={id:editingDeveloperId||crypto.randomUUID(),name:developerName.value.trim(),role:developerRole.value};
-      next=validateDevelopers([...developers().filter(d=>d.id!==entry.id),entry]);
+      const current=developers();
+      const existing=current.find(d=>d.id===editingDeveloperId);
+      const entry={...existing,id:editingDeveloperId||crypto.randomUUID(),name:developerName.value.trim(),role:developerRole.value};
+      const updated=existing?current.map(d=>d.id===entry.id?entry:d):[...current,entry];
+      next=validateDevelopers(updated.map((d,order)=>({...d,order})));
     }catch(e){showDeveloperError(e.message);return;}
-    savingDeveloper=true;developerFields.disabled=true;newDeveloper.disabled=true;renderDeveloperList();
+    setDeveloperBusy(true);
     try{
       await saveSettingsRemote({developers:next},developerEditingVersion);
       savingDeveloper=false;
@@ -687,7 +846,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
       setSync("err","Не удалось сохранить разработчика");
       showDeveloperError(e.message==="CONFLICT"?"Список или настройки уже изменены. Выберите разработчика в списке заново или нажмите «+ Разработчик», чтобы загрузить актуальные данные.":"Ошибка сохранения: "+e.message);
     }finally{
-      savingDeveloper=false;developerFields.disabled=false;newDeveloper.disabled=false;renderDeveloperList();
+      setDeveloperBusy(false);
     }
   }
 
@@ -748,6 +907,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   }
   function closeEditor(){editorModal.classList.remove("open");editingId=null;editingVersion=null;}
   async function saveEditor(){
+    if(!canEdit)return;
     const obj={
       resource:fResource.value,name:fName.value.trim(),slot:fSlot.value.trim(),type:fType.value,
       start:fStart.value,end:fEnd.value,qa:fType.value==="Отпуск"?"":fQa.value.trim(),
@@ -778,11 +938,14 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     const importedDevelopers=validateDevelopers(x.settings.developers??[]);
     if(importedDevelopers.length&&!developersAvailable)throw new Error("Для импорта разработчиков требуется обновление базы роадмапы.");
     if(!confirm("Импорт заменит все активности, разработчиков и настройки этой роадмапы в облаке. Продолжить?"))return;
+    const epoch=sessionEpoch;
     setSync("busy","Импорт…");
     const del=await sb.from("roadmap_activities").delete().eq("roadmap_id",roadmapId);
+    if(epoch!==sessionEpoch)throw new Error("Сеанс завершён.");
     if(del.error)throw del.error;
     if(x.activities.length){
       const ins=await sb.from("roadmap_activities").insert(x.activities.map(a=>activityToDb(a)));
+      if(epoch!==sessionEpoch)throw new Error("Сеанс завершён.");
       if(ins.error)throw ins.error;
     }
     const upd=await sb.from("roadmap_settings").update({
@@ -790,46 +953,150 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
       business_slots:x.settings.businessSlots,tech_slots:x.settings.techSlots,
       ...(developersAvailable?{developers:importedDevelopers}:{})
     }).eq("id",roadmapId);
+    if(epoch!==sessionEpoch)throw new Error("Сеанс завершён.");
     if(upd.error)throw upd.error;
     await loadRemote();
+  }
+
+  // ---------- Access ----------
+  function requireAccess(){
+    if(!canEdit)throw new Error("Сначала войдите в систему.");
+  }
+  function clearPrivateView(){
+    dataReady=false;
+    state=emptyState();
+    developersAvailable=false;
+    roadmapApp.hidden=true;
+    accessGate.hidden=false;
+    clearTimeout(reloadTimer);
+    pendingRealtimeReload=false;
+    if(realtimeChannel){sb.removeChannel(realtimeChannel);realtimeChannel=null;}
+    document.removeEventListener("pointermove",onDrag);
+    document.removeEventListener("pointerup",endDrag);
+    document.removeEventListener("pointercancel",endDrag);
+    drag=null;
+    document.querySelectorAll(".modal.open").forEach(el=>el.classList.remove("open"));
+    for(const el of [gantt,capacity,dataTable,legend,developerList,fResource,qaList])el.replaceChildren();
+    for(const el of [fName,fSlot,fStart,fEnd,fQa,fComment,developerName])el.value="";
+    editingId=null;editingVersion=null;editingDeveloperId=null;developerEditingVersion=null;
+    currentUser.textContent="";lastChange.textContent="";filterSummary.textContent="";
+    developerViewStatus.textContent="";developerDragId=null;
+    savingDeveloper=false;developerFields.disabled=false;newDeveloper.disabled=false;
+    roadmapTitle.textContent="Командная роадмапа";ganttTitle.textContent="Роадмапа";
+    teamFilter.value="all";
+    setEditability();
+  }
+  async function applySession(session,force=false){
+    if(session&&sessionClosed)return;
+    const user=session?.user||null;
+    if(!force&&user?.id&&user.id===sessionUser?.id&&(dataReady||loadingSession))return;
+    const epoch=++sessionEpoch;
+    sessionUser=user;
+    clearPrivateView();
+    loginPassword.value="";
+    loginForm.hidden=!!user;
+    gateSignOut.hidden=!user;
+    retryAccess.hidden=true;
+    loadingSession=!!user;
+    if(!user){accessMessage.textContent="Войдите, чтобы открыть роадмапу.";return;}
+    accessMessage.textContent="Проверяем доступ…";
+    try{
+      await loadRemote();
+      if(epoch!==sessionEpoch)return;
+      accessGate.hidden=true;
+      roadmapApp.hidden=false;
+      currentUser.textContent=user.email||"Участник команды";
+      subscribeRealtime();
+    }catch(e){
+      if(epoch!==sessionEpoch)return;
+      clearPrivateView();
+      accessMessage.textContent="Роадмапа недоступна. Проверьте подключение и попросите владельца проверить ваш доступ.";
+      retryAccess.hidden=false;
+    }finally{
+      if(epoch===sessionEpoch)loadingSession=false;
+    }
+  }
+  async function signOutSession(){
+    // Clear the screen immediately, even when the network is unavailable.
+    sessionClosed=true;
+    sb.auth.stopAutoRefresh();
+    await applySession(null,true);
+    loginSubmit.disabled=true;
+    try{
+      const {error}=await sb.auth.signOut({scope:"local"});
+      if(error)throw error;
+    }catch(e){
+      // Session storage belongs to this tab only. Do not leave a reusable session behind.
+      sessionStorage.removeItem(`roadmap-auth-${roadmapId}`);
+      accessMessage.textContent="Локальный сеанс завершён. Для повторного входа обновите страницу.";
+      return;
+    }
+    loginSubmit.disabled=false;
+    loginEmail.focus();
+  }
+  async function signIn(event){
+    event.preventDefault();
+    if(!sb||!loginForm.reportValidity())return;
+    loginSubmit.disabled=true;
+    accessMessage.textContent="Входим…";
+    try{
+      const {data,error}=await sb.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});
+      loginPassword.value="";
+      if(error)throw error;
+      sessionClosed=false;
+      sb.auth.startAutoRefresh();
+      await applySession(data.session);
+    }catch(e){
+      loginPassword.value="";
+      accessMessage.textContent="Не удалось войти. Проверьте email, пароль и подключение.";
+    }finally{loginSubmit.disabled=false;}
   }
 
   // ---------- Init ----------
   async function init(){
     for(let i=1;i<=8;i++){
       const o=document.createElement("option");
-      o.value=i; o.textContent=i; quarters.appendChild(o);
+      o.value=i;o.textContent=i;quarters.appendChild(o);
     }
-
-    canEdit=true;
-    render();
-
+    setEditability();
     if(!configValid()||!window.supabase){
-      configModal.classList.add("open");
-      setSync("err","Supabase не настроен");
+      accessMessage.textContent="Не удалось подключить страницу входа. Обновите страницу или обратитесь к владельцу.";
       return;
     }
-
-    sb=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{
-      auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
-    });
-
     try{
-      await loadRemote();
-      subscribeRealtime();
-      setSync("ok","Общий доступ подключён");
+      sb=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{
+        auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storage:sessionStorage,storageKey:`roadmap-auth-${roadmapId}`}
+      });
+      // Supabase auth callbacks must not await another Supabase operation.
+      sb.auth.onAuthStateChange((event,session)=>{
+        if(event==="SIGNED_IN"||event==="SIGNED_OUT"||event==="TOKEN_REFRESHED"){
+          setTimeout(()=>applySession(session),0);
+        }
+      });
+      const {data,error}=await sb.auth.getSession();
+      if(error)throw error;
+      loginSubmit.disabled=false;
+      await applySession(data.session);
     }catch(e){
-      console.error(e);
-      setSync("err","Ошибка подключения к Supabase");
-      alert("Не удалось загрузить общую роадмапу из Supabase: "+e.message);
+      accessMessage.textContent="Не удалось восстановить сеанс. Обновите страницу и войдите снова.";
     }
   }
 
   // ---------- Controls ----------
+  loginForm.onsubmit=signIn;
+  signOut.onclick=signOutSession;
+  gateSignOut.onclick=signOutSession;
+  retryAccess.onclick=async()=>{
+    const {data,error}=await sb.auth.getSession();
+    if(error){accessMessage.textContent="Не удалось проверить сеанс. Выйдите и войдите снова.";return;}
+    await applySession(data.session,true);
+  };
+  teamFilter.onchange=()=>{if(!drag)render();};
   addActivity.onclick=()=>openEditor();
   addVacation.onclick=()=>openEditor(null,{resource:resources()[0]||"Разработчик 1",name:"Отпуск",slot:"",type:"Отпуск",start:fmt(new Date()),end:fmt(new Date()),qa:"",carry:false,status:"План",comment:""});
   manageDevelopers.onclick=()=>openDevelopers();
   newDeveloper.onclick=()=>editDeveloper();
+  showAllDevelopers.onclick=()=>changeDeveloperView("show-all");
   closeDevelopers.onclick=closeDeveloperEditor;
   developerForm.onsubmit=saveDeveloperEditor;
   developersModal.addEventListener("click",e=>{if(e.target===developersModal)closeDeveloperEditor();});
@@ -845,7 +1112,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   editorModal.addEventListener("click",e=>{if(e.target===editorModal)closeEditor();});
   saveActivity.onclick=saveEditor;
   deleteActivity.onclick=async()=>{
-    if(!editingId||!confirm("Удалить активность?"))return;
+    if(!canEdit||!editingId||!confirm("Удалить активность?"))return;
     deleteActivity.disabled=true;
     try{await deleteActivityRemote(editingId,editingVersion);closeEditor();}
     catch(e){if(e.message==="CONFLICT")alert("Запись уже изменилась у другого пользователя.");else alert("Ошибка удаления: "+e.message);}
@@ -860,7 +1127,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     }catch(e){if(e.message==="CONFLICT")alert("Настройки уже изменены другим пользователем.");else alert("Ошибка: "+e.message);}
   };
   reloadCloud.onclick=()=>loadRemote().catch(e=>{console.error(e);setSync("err","Ошибка синхронизации");});
-  exportJson.onclick=()=>downloadBlob(JSON.stringify(state,null,2),"roadmap-data.json","application/json");
+  exportJson.onclick=()=>{if(canEdit)downloadBlob(JSON.stringify(state,null,2),"roadmap-data.json","application/json");};
   importJson.onclick=()=>jsonFile.click();
   jsonFile.onchange=async()=>{
     const f=jsonFile.files[0];if(!f)return;
