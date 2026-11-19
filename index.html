@@ -8,8 +8,8 @@
 <title>Roadmap · Shared</title>
 <style>
 :root{
-  --bg:#f4f6f8; --panel:#fff; --text:#172033; --muted:#667085; --line:#d0d5dd;
-  --biz:#3b82f6; --tech:#22c55e; --vac:#f59e0b; --danger:#dc2626;
+  --bg:#f6f7f9; --panel:#fff; --text:#172033; --muted:#667085; --line:#e1e5eb;
+  --biz:#2563eb; --tech:#16804a; --vac:#f59e0b; --danger:#dc2626;
   --ds:#7c3aed; --go:#0e7490;
   --label:190px; --day:14px; --week:98px;
 }
@@ -17,57 +17,134 @@
 body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
-.app{max-width:100%;padding:16px}
-.topbar{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
-h1{font-size:24px;margin:0 0 4px}
+.app{max-width:100%;padding:24px}
+.topbar{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:20px}
+h1{font-size:24px;letter-spacing:-.5px;font-weight:650;margin:0 0 5px}
+.eyebrow{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .sub{font-size:12px;color:var(--muted)}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .btn{border:1px solid var(--line);background:#fff;color:var(--text);padding:8px 11px;border-radius:8px;font-weight:650}
-.btn.primary{background:#172033;color:#fff;border-color:#172033}
+.btn.primary{background:#172033;color:#fff;border-color:#172033;padding:10px 15px}
 .btn.danger{color:#b42318}
-.settings{display:flex;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:10px;margin-bottom:12px}
+.settings{display:flex;gap:16px;flex-wrap:wrap;padding:18px 16px;align-items:flex-end}
+.team-limits{display:flex;gap:10px;min-width:0;margin:0;padding:0 0 0 16px;border:0;border-left:1px solid var(--line)}
+.team-limits legend{font-size:12px;font-weight:750;padding:0;margin-bottom:8px}
+.team-limits.ds legend{color:var(--ds)}.team-limits.go legend{color:var(--go)}
+.settings-note{flex-basis:100%;margin:0}
 .field{display:flex;flex-direction:column;gap:4px}
 .field label{font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:800;letter-spacing:.04em}
 .field input,.field select,.field textarea{border:1px solid var(--line);border-radius:7px;padding:7px 8px;background:#fff;color:var(--text)}
 .field input[type=number]{width:90px}
 .legend{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 10px;font-size:12px;color:#475467}
 .leg{display:flex;align-items:center;gap:6px}.sw{width:18px;height:10px;border-radius:3px}
-.panel{background:#fff;border:1px solid #e4e7ec;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.05);margin-bottom:14px}
+.panel{background:#fff;border:1px solid #e4e7ec;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.03);margin-bottom:14px}
 .panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #e4e7ec}
 .panel-head strong{font-size:14px}.panel-head span{font-size:11px;color:var(--muted)}
 .scroll{overflow:auto;-webkit-overflow-scrolling:touch}
 .gantt{position:relative;min-width:900px}
 .header-row,.resource-row{display:grid;grid-template-columns:var(--label) auto}
+.header-row{position:sticky;top:0;z-index:40}
 .resource-label{position:sticky;left:0;z-index:30;background:#fff;border-right:1px solid var(--line);padding:0 10px;display:flex;align-items:center}
 .horizon{position:relative}
 .quarter-row,.month-row,.week-row{position:relative;overflow:hidden}
-.quarter-row{height:24px;border-bottom:1px solid var(--line);background:#eef2f6}
+.quarter-row{height:24px;border-bottom:1px solid var(--line);background:#f6f7f9}
 .month-row{height:24px;border-bottom:1px solid var(--line);background:#f8fafc}
 .week-row{height:36px;border-bottom:1px solid var(--line);background:#fff}
 .headseg{position:absolute;top:0;bottom:0;border-right:1px solid #98a2b3;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;overflow:hidden;white-space:nowrap}
 .weekseg{position:absolute;top:0;bottom:0;border-right:1px solid #d0d5dd;padding:5px 4px;font-size:10px;color:#475467;overflow:hidden}
 .resource-row{border-bottom:1px solid #eaecf0}
-.resource-name{font-size:12px;font-weight:800;background:#fff;align-items:flex-start;padding-top:10px}
+.resource-name{font-size:12px;font-weight:800;background:#fff;align-items:flex-start;flex-direction:column;gap:7px;padding-top:10px}
+.row-controls{display:flex;gap:2px;align-items:center;opacity:0;pointer-events:none}
+.resource-row:hover .row-controls,.resource-row:focus-within .row-controls{opacity:1;pointer-events:auto}
+.row-controls .small-btn{border-color:transparent;background:transparent;color:#667085}
+.row-controls .small-btn:hover{background:#eef2f6;color:#172033}
+.resource-row.drop-target .resource-label{box-shadow:inset 0 3px var(--go)}
+.gantt-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid #eaecf0;border-radius:12px 12px 0 0}
+.toolbar-spacer{flex:1}
+.team-select{border:1px solid var(--line);border-radius:7px;background:#fff;padding:8px 30px 8px 11px;color:var(--text);font-size:12px;font-weight:600;max-width:180px}
+.gantt-scroll{max-height:calc(100dvh - 210px);min-height:170px;overscroll-behavior:contain}
+.roadmap-panel{overflow:visible}
+.gantt-toolbar>.small-btn,.people-menu>summary{padding:8px 11px;font-size:12px;font-weight:650}
+#addLink{color:#475467;background:#fff}
+#addLink[aria-pressed=true]{background:#7c3aed;color:#fff}
+.link-context{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid #e9e3f6;background:#faf8fe}
+.link-context .sub{flex:1;min-width:180px;color:#5b457c}
+.link-context .small-btn{padding:6px 9px;font-size:11px}
+#deleteLink{color:#b42318}
+.people-menu{position:relative}
+.people-menu>summary{list-style:none;border:1px solid var(--line);border-radius:7px;cursor:pointer;background:#fff;display:flex;align-items:center;gap:8px}
+.people-menu>summary::-webkit-details-marker{display:none}
+.people-menu[open]>summary{border-color:var(--go);background:#f0f9fc}
+.count-pill{font-size:10px;padding:2px 6px;border-radius:10px;background:#eef2f6;color:#475467}
+.people-popover{position:absolute;top:calc(100% + 8px);left:0;width:min(350px,calc(100vw - 48px));padding:14px;background:#fff;border:1px solid #e4e7ec;border-radius:12px;box-shadow:0 12px 35px #10182826;z-index:60}
+.people-popover h3{font-size:14px;margin:0 0 5px}
+.people-popover p{margin:0 0 12px;font-size:11px;color:var(--muted);line-height:1.5}
+.people-search{width:100%;border:1px solid var(--line);border-radius:7px;padding:8px 10px;margin-bottom:8px;font-size:12px}
+.people-options{max-height:300px;overflow:auto}
+.people-group{font-size:10px;color:var(--muted);font-weight:750;text-transform:uppercase;margin:10px 0 4px}
+.people-option{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:9px 4px;cursor:pointer;border-radius:6px;font-size:12px}
+.people-option:hover{background:#f8fafc}
+.people-option .person-name{overflow-wrap:anywhere}
+.people-switch{appearance:none;position:relative;width:32px;height:19px;flex:0 0 32px;background:#cbd5e1;border:0;border-radius:20px;cursor:pointer;margin:0}
+.people-switch:checked{background:var(--go)}
+.people-switch:after{content:"";position:absolute;width:13px;height:13px;left:3px;top:3px;border-radius:50%;background:#fff;transition:transform .12s}
+.people-switch:checked:after{transform:translateX(13px)}
+.people-switch:focus-visible{outline:3px solid #7c3aed66;outline-offset:2px}
+.people-footer{border-top:1px solid #eaecf0;padding-top:10px;margin-top:8px;display:flex;gap:8px;justify-content:space-between}
+.hidden-people{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:8px 14px;background:#fafbfc;border-bottom:1px solid #eaecf0}
+.hidden-people>span{font-size:11px;color:var(--muted);margin-right:4px}
+#hiddenPeople{display:contents}
+.person-chip{display:flex;align-items:center;gap:7px;border:1px solid #e1e5eb;background:#fff;border-radius:20px;padding:4px 9px;font-size:11px;color:#667085;max-width:200px}
+.person-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.person-chip:hover{border-color:var(--go);color:var(--go);background:#ecfeff}
+.person-chip b{font-size:15px;line-height:1}
+.gantt-status{position:fixed;bottom:20px;right:20px;z-index:95;display:flex;gap:16px;align-items:center;max-width:min(430px,calc(100vw - 32px));margin:0;padding:12px 14px;border:1px solid #e4e7ec;border-radius:10px;font-size:12px;line-height:1.5;background:#fff;box-shadow:0 8px 30px #1018281f}
+.gantt-status.error{color:#b42318;background:#fff8f7;border-color:#fecdca}
+.gantt-status button{border:0;background:none;color:inherit;font-size:20px;padding:0 4px;line-height:1}
+.link-layer{position:absolute;left:var(--label);top:84px;z-index:8;pointer-events:none;overflow:hidden}
+.activity-link{fill:none;stroke:var(--link-color,#475467);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;pointer-events:none;opacity:.8}
+.link-halo{fill:none;stroke:#fff;stroke-width:6;stroke-linejoin:round;pointer-events:none}
+.activity-link.selected,.link-group:hover .activity-link{stroke-width:3;opacity:1}
+.link-hit{fill:none;stroke:transparent;stroke-width:12;pointer-events:stroke;cursor:pointer}
+.link-hit:focus{outline:none;stroke:#7c3aed33}
+.link-preview{fill:none;stroke:var(--ds);stroke-width:2;stroke-dasharray:5 4;pointer-events:none}
+.gantt.linking .bar:not(.vac),.gantt.linking .bar:not(.vac) .drag-area,.gantt.linking .handle{cursor:crosshair}
+.bar.link-source{outline:3px solid var(--ds);outline-offset:2px}
+.bar.link-target{outline:3px solid #059669;outline-offset:3px;box-shadow:0 0 0 6px #d1fae5}
+.bar.link-related{outline:2px solid #475467;outline-offset:2px}
+.gantt.has-link-target .bar:not(.link-source):not(.link-target){opacity:.4}
+.link-port{position:absolute;width:22px;height:22px;border:1px solid #94a3b8;border-radius:50%;background:#fff;color:#475467;display:grid;place-items:center;font-size:14px;line-height:1;padding:0;z-index:12;cursor:crosshair;touch-action:none;box-shadow:0 1px 4px #10182820;opacity:0;pointer-events:none}
+.bar:hover+.link-port,.bar:focus+.link-port,.link-port:hover,.link-port:focus-visible,.gantt.linking .link-port{opacity:1;pointer-events:auto}
+.link-port:hover,.link-port:focus-visible,.gantt.linking .link-port{border-color:var(--ds);color:var(--ds);background:#f5f3ff;outline-offset:2px}
+.link-port:disabled{visibility:hidden}
+.gantt.linking .link-port{pointer-events:none}
+.gantt.linking .link-port:focus-visible{pointer-events:auto}
+.link-drag-tip{position:fixed;z-index:90;pointer-events:none;padding:7px 10px;border-radius:7px;background:#172033;color:#fff;font-size:11px;max-width:250px;box-shadow:0 4px 12px #10182826}
+.link-drag-tip.ready{background:#047857}
+.bar:focus-visible{outline:3px solid #172033;outline-offset:2px}
+.gantt.linking .bar.vac{opacity:.5}
+.gantt.linking .link-hit{pointer-events:none}
 .resource-button{border:0;background:none;color:inherit;text-align:left;padding:0;display:flex;flex-direction:column;align-items:flex-start;gap:5px;width:100%;overflow-wrap:anywhere}
 .resource-button:hover .developer-name{text-decoration:underline}
 .resource-button .developer-name{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .role-badge{display:inline-block;border-radius:5px;padding:3px 6px;font-size:10px;font-weight:800;background:#f2f4f7;color:#667085;white-space:nowrap}
-.role-ds .resource-name,.role-ds .lane{background:#faf7ff}
-.role-go .resource-name,.role-go .lane{background:#f0f9fc}
-.role-ds .resource-name{border-left:4px solid var(--ds)}
-.role-go .resource-name{border-left:4px solid var(--go)}
+.role-ds .resource-name,.role-go .resource-name{background:#fcfcfd}
+.role-ds .resource-name{border-left:2px solid var(--ds)}
+.role-go .resource-name{border-left:2px solid var(--go)}
 .role-badge.ds{color:var(--ds);background:#ede9fe}
 .role-badge.go{color:var(--go);background:#cffafe}
 .developer-cell{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
 .lane{position:relative;background:#fff}
-.lane:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to right,transparent 0,transparent 97px,#e5e7eb 97px,#e5e7eb 98px);pointer-events:none}
-.weekend{position:absolute;top:0;bottom:0;background:rgba(148,163,184,.09);pointer-events:none}
-.bar{position:absolute;height:38px;border-radius:8px;color:#fff;padding:6px 24px 7px 8px;overflow:hidden;box-shadow:0 1px 3px rgba(16,24,40,.18);z-index:5;user-select:none;touch-action:none}
+.lane:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to right,transparent 0,transparent 97px,#eef0f3 97px,#eef0f3 98px);pointer-events:none}
+.weekend{position:absolute;top:0;bottom:0;background:rgba(148,163,184,.05);pointer-events:none}
+.bar{position:absolute;height:38px;border-radius:8px;color:#fff;padding:6px 0 7px;overflow:hidden;box-shadow:0 1px 3px rgba(16,24,40,.18);z-index:5;user-select:none;touch-action:none}
 .bar.biz{background:var(--biz)} .bar.tech{background:var(--tech)}
 .bar.vac{background:repeating-linear-gradient(135deg,#f59e0b 0,#f59e0b 7px,#fcd34d 7px,#fcd34d 14px);color:#7c2d12;border:1px solid #d97706}
 .bar.carry{border-right:3px dashed #172033}
 .bar .name{font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar .dates{font-size:9px;opacity:.92;margin-top:3px;white-space:nowrap}
+.bar .name,.bar .dates{padding:0 8px}
 .qa-strip{position:absolute;left:0;right:0;bottom:0;height:6px;opacity:.98}
 .handle{position:absolute;top:0;bottom:0;width:7px;cursor:ew-resize;z-index:7}
 .handle.resize-left{left:0}.handle.resize-right{right:0}
@@ -75,7 +152,6 @@ h1{font-size:24px;margin:0 0 4px}
 .drag-area{position:absolute;left:7px;right:7px;top:0;bottom:0;cursor:grab}
 .bar.dragging .drag-area{cursor:grabbing}
 .today{position:absolute;top:0;bottom:0;width:2px;background:#ef4444;z-index:20;pointer-events:none}
-.today span{position:absolute;top:2px;left:4px;background:#fff;color:#ef4444;font-size:9px;font-weight:800;padding:1px 3px;border-radius:3px}
 .capacity{min-width:900px;display:grid}
 .cap-row{display:grid;grid-template-columns:var(--label) auto;border-bottom:1px solid #eaecf0;min-height:30px}
 .cap-label{position:sticky;left:0;z-index:5;background:#fff;border-right:1px solid var(--line);padding:6px 10px;font-size:11px;font-weight:750}
@@ -118,21 +194,10 @@ tr:hover td{background:#fafafa}
 .access-gate{min-height:100vh;display:grid;place-items:center;padding:20px}
 .access-gate .dialog{max-width:430px}
 .access-gate .field{margin:12px 0}
-.filterbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-.filterbar select{border:1px solid var(--line);border-radius:7px;padding:7px;background:#fff}
 .empty-state{padding:20px;color:var(--muted);font-size:13px}
-@media(max-width:800px){
-  .app{padding:8px}.topbar{align-items:stretch}.actions{width:100%}.btn{flex:1}.settings{gap:8px}.formgrid{grid-template-columns:1fr}
-}
-
-.cloudbar{
-  display:flex;align-items:center;gap:9px;flex-wrap:wrap;
-  background:#fff;border:1px solid #e4e7ec;border-radius:10px;
-  padding:8px 10px;margin-bottom:12px;font-size:11px;color:#475467
-}
+.sync-state{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-right:8px}
 .sync-dot{width:9px;height:9px;border-radius:50%;background:#98a2b3;display:inline-block}
 .sync-dot.ok{background:#22c55e}.sync-dot.busy{background:#f59e0b}.sync-dot.err{background:#ef4444}
-.cloud-spacer{flex:1}
 .user-pill{padding:4px 8px;background:#f2f4f7;border-radius:999px;font-weight:700}
 .readonly{background:#fef3c7;color:#92400e;padding:4px 8px;border-radius:999px;font-weight:800}
 .auth-dialog{width:min(430px,100%);text-align:left}
@@ -141,6 +206,37 @@ tr:hover td{background:#fafafa}
 .auth-info{display:none;margin-top:8px;padding:8px;border-radius:7px;background:#dcfce7;color:#166534;font-size:11px}
 .config-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f2f4f7;padding:8px;border-radius:7px;font-size:10px;white-space:pre-wrap}
 .last-change{color:#667085}
+.toolbar-menu{position:relative}
+.toolbar-menu>summary{list-style:none;cursor:pointer;padding:10px 13px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:13px}
+.toolbar-menu>summary::-webkit-details-marker{display:none}
+.menu-content{position:absolute;top:calc(100% + 7px);right:0;z-index:65;width:250px;background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:7px;box-shadow:0 12px 35px #10182826}
+.menu-content>button{display:block;width:100%;border:0;background:none;text-align:left;padding:9px 10px;border-radius:6px;font-size:12px;color:var(--text)}
+.menu-content>button:hover{background:#f4f6f8}
+.menu-separator{height:1px;background:#eaecf0;margin:6px 0}
+.menu-account{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:8px 4px 3px;font-size:11px}
+.menu-meta{font-size:10px;line-height:1.5;color:var(--muted);padding:4px 10px}
+.roadmap-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-top:1px solid #eaecf0;font-size:11px;color:var(--muted)}
+.roadmap-help{position:relative}
+.roadmap-help>summary{cursor:pointer;list-style:none;white-space:nowrap;padding:3px 0;color:#667085}
+.roadmap-help>summary::-webkit-details-marker{display:none}
+.help-content{position:absolute;bottom:calc(100% + 12px);right:0;width:min(360px,calc(100vw - 48px));z-index:60;background:#fff;padding:16px;border:1px solid #e4e7ec;border-radius:12px;box-shadow:0 12px 35px #10182826;font-size:12px;color:#475467;line-height:1.6}
+.help-content p{margin:0 0 10px}
+.help-content .legend{padding-top:10px;border-top:1px solid #eaecf0;margin:0;font-size:11px;gap:10px}
+.secondary-sections{display:grid;gap:8px}
+.section-card{border:1px solid #e4e7ec;border-radius:10px;background:#fff;overflow:hidden}
+.section-card>summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none;padding:13px 16px;font-size:13px;font-weight:600}
+.section-card>summary::-webkit-details-marker{display:none}
+.section-card>summary:before{content:"›";font-size:18px;font-weight:400;color:#98a2b3;transition:transform .15s}
+.section-card[open]>summary:before{transform:rotate(90deg)}
+.section-card>summary span{font-size:11px;font-weight:400;color:var(--muted);margin-left:auto}
+.section-card[open]>summary{border-bottom:1px solid #eaecf0}
+@media(hover:none){.row-controls,.link-port{opacity:1;pointer-events:auto}}
+@media(max-width:800px){
+  .app{padding:12px}.topbar{gap:12px;margin-bottom:14px}.actions{width:100%;gap:8px}.settings{gap:10px}.formgrid{grid-template-columns:1fr}
+  .sync-state{margin-right:auto}.gantt-toolbar{padding:10px;gap:6px}.team-select{max-width:145px;padding-right:18px}
+  .gantt-scroll{max-height:65dvh}.section-card>summary span{display:none}.gantt-status{bottom:12px;right:12px}
+}
+@media(max-width:600px){.people-popover{position:fixed;left:12px;right:12px;top:100px;width:auto;max-height:calc(100dvh - 124px);overflow:auto}}
 button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}
 </style>
 </head>
@@ -164,60 +260,103 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
 <div class="app" id="roadmapApp" hidden>
   <div class="topbar">
     <div>
-      <h1 id="roadmapTitle">Командная роадмапа</h1>
-      <div class="sub">Общий план команды · изменения синхронизируются автоматически</div>
+      <div class="eyebrow">План домена · DS и Go</div>
+      <h1 id="roadmapTitle">Роадмапа</h1>
+      <div class="sub" id="roadmapPeriod"></div>
     </div>
     <div class="actions">
-      <button class="btn primary edit-control" id="addActivity">+ Активность</button>
-      <button class="btn edit-control" id="addVacation">+ Отпуск</button>
-      <button class="btn edit-control" id="manageDevelopers">Разработчики</button>
-      <button class="btn" id="reloadCloud">Обновить</button>
-      <button class="btn" id="exportJson">Экспорт JSON</button>
-      <button class="btn edit-control" id="importJson">Импорт JSON</button>
+      <span class="sync-state" role="status"><span id="syncDot" class="sync-dot"></span><span id="syncText">Подключение…</span></span>
+      <button class="btn primary edit-control" id="addActivity">+ Проект</button>
+      <details class="toolbar-menu" id="moreMenu">
+        <summary>Ещё ···</summary>
+        <div class="menu-content">
+          <button class="edit-control" id="addVacation" type="button">Добавить отпуск</button>
+          <button class="edit-control" id="manageDevelopers" type="button">Настройки команды</button>
+          <div class="menu-separator"></div>
+          <button id="reloadCloud" type="button">Обновить данные</button>
+          <button id="exportJson" type="button">Скачать JSON</button>
+          <button class="edit-control" id="importJson" type="button">Загрузить JSON</button>
+          <div class="menu-separator"></div>
+          <div class="menu-meta" id="lastChange"></div>
+          <div class="menu-account"><span class="user-pill" id="currentUser"></span><button class="small-btn" id="signOut" type="button">Выйти</button></div>
+        </div>
+      </details>
       <input id="jsonFile" type="file" accept=".json,application/json" class="hidden">
     </div>
   </div>
 
-  <div class="cloudbar">
-    <span id="syncDot" class="sync-dot"></span>
-    <b id="syncText">Инициализация…</b>
-    <span id="lastChange" class="last-change"></span>
-    <span class="cloud-spacer"></span>
-    <span class="user-pill" id="currentUser"></span>
-    <button class="small-btn" id="signOut" type="button">Выйти</button>
-  </div>
+  <section class="panel roadmap-panel" aria-labelledby="ganttTitle">
+    <h2 class="sr-only" id="ganttTitle">План проектов</h2>
+    <div class="gantt-toolbar">
+      <label class="sr-only" for="teamFilter">Команда</label>
+      <select class="team-select" id="teamFilter"><option value="all">Все команды</option><option value="DS">DS</option><option value="Go">Go</option><option value="unassigned">Без команды</option></select>
+      <details class="people-menu" id="peopleMenu">
+        <summary>Разработчики <span class="count-pill" id="peopleCount"></span> ▾</summary>
+        <div class="people-popover">
+          <h3>Кого показывать</h3>
+          <p>Общий вид домена. Проекты скрытых разработчиков сохраняются.</p>
+          <input class="people-search" id="peopleSearch" type="search" placeholder="Найти разработчика" aria-label="Найти разработчика" autocomplete="off">
+          <div class="people-options" id="peopleOptions"></div>
+          <div class="people-footer"><button class="small-btn" id="showPeople" type="button">Показать всех</button><button class="small-btn" id="editPeople" type="button">Настроить команду</button></div>
+        </div>
+      </details>
+      <span class="toolbar-spacer"></span>
+      <button class="small-btn" id="addLink" type="button" aria-pressed="false">↗ Связать проекты</button>
+    </div>
+    <div class="link-context" id="linkContext" hidden>
+      <span class="sub" id="linkHint" role="status" aria-live="polite"></span>
+      <button class="small-btn" id="reverseLink" type="button" hidden>⇄ Развернуть</button>
+      <button class="small-btn" id="deleteLink" type="button" hidden>Удалить связь</button>
+      <button class="small-btn" id="cancelLink" type="button" hidden>Отменить</button>
+    </div>
+    <div class="hidden-people" id="hiddenPeopleRow" hidden><div class="hidden-people" id="hiddenPeople"></div><button class="small-btn" id="restoreDevelopers" type="button">Вернуть всех</button></div>
+    <div class="scroll gantt-scroll"><div id="gantt" class="gantt"></div></div>
+    <div class="roadmap-footer">
+      <span id="filterSummary" aria-live="polite"></span>
+      <details class="roadmap-help" id="roadmapHelp">
+        <summary>Как пользоваться</summary>
+        <div class="help-content">
+          <p><b>Проекты.</b> Перетаскивайте карточку, чтобы менять даты, и её края — чтобы менять длительность. Нажмите для редактирования.</p>
+          <p><b>Разработчики.</b> Наведите на строку, чтобы переместить или скрыть её. Список над диаграммой позволяет вернуть скрытых.</p>
+          <p><b>Связи.</b> Наведите на проект и потяните ↗ к другому. Нажмите на готовую стрелку, чтобы развернуть или удалить её.</p>
+          <p id="linkAvailability" hidden></p>
+          <div class="legend" id="legend"></div>
+        </div>
+      </details>
+    </div>
+  </section>
 
-  <div class="settings">
-    <div class="field"><label>Старт горизонта</label><input class="edit-control" id="horizonStart" type="date"></div>
-    <div class="field"><label>Кварталов</label><select class="edit-control" id="quarters"></select></div>
-    <div class="field"><label>Бизнес-слотов</label><input class="edit-control" id="businessSlots" type="number" min="1" max="20"></div>
-    <div class="field"><label>Техслотов</label><input class="edit-control" id="techSlots" type="number" min="1" max="20"></div>
-    <div class="field"><label>&nbsp;</label><button id="applySettings" class="btn edit-control">Применить</button></div>
+  <div class="secondary-sections">
+    <details class="section-card" id="capacitySection">
+      <summary>Загрузка команд <span>Лимиты DS и Go отдельно</span></summary>
+      <div class="notice">Слоты считаются отдельно для DS и Go по видимым разработчикам. Без назначенной команды лимит не проверяется.</div>
+      <div class="scroll"><div id="capacity" class="capacity"></div></div>
+    </details>
+    <details class="section-card" id="dataSection">
+      <summary>Список проектов <span>Даты, статусы и комментарии</span></summary>
+      <div class="table-wrap"><table id="dataTable"></table></div>
+    </details>
+    <details class="section-card" id="settingsSection">
+      <summary>Настройки плана <span>Период и лимиты загрузки</span></summary>
+      <div class="settings">
+        <div class="field"><label for="horizonStart">Начало периода</label><input class="edit-control" id="horizonStart" type="date"></div>
+        <div class="field"><label for="quarters">Кварталов</label><select class="edit-control" id="quarters"></select></div>
+        <fieldset class="team-limits ds"><legend>Команда DS</legend>
+          <div class="field"><label for="dsBusinessSlots">Бизнес-слотов</label><input class="edit-control" id="dsBusinessSlots" type="number" min="1" max="20" required></div>
+          <div class="field"><label for="dsTechSlots">Техслотов</label><input class="edit-control" id="dsTechSlots" type="number" min="1" max="20" required></div>
+        </fieldset>
+        <fieldset class="team-limits go"><legend>Команда Go</legend>
+          <div class="field"><label for="businessSlots">Бизнес-слотов</label><input class="edit-control" id="businessSlots" type="number" min="1" max="20" required></div>
+          <div class="field"><label for="techSlots">Техслотов</label><input class="edit-control" id="techSlots" type="number" min="1" max="20" required></div>
+        </fieldset>
+        <button id="applySettings" class="btn edit-control">Сохранить настройки</button>
+        <p class="sub settings-note" id="dsCapacityHint" hidden>Для DS действуют 3 бизнес-слота и 1 технический. Для изменения этих лимитов владельцу нужно обновить базу.</p>
+      </div>
+    </details>
   </div>
-
-  <div class="filterbar">
-    <label for="teamFilter">Команда</label>
-    <select id="teamFilter"><option value="all">Все команды</option><option value="DS">DS</option><option value="Go">Go</option><option value="unassigned">Без направления</option></select>
-    <span class="sub" id="filterSummary" aria-live="polite"></span>
-  </div>
-  <div class="legend" id="legend"></div>
-
-  <div class="panel">
-    <div class="panel-head"><strong id="ganttTitle">Роадмапа — общий план</strong><span>Изменения сохраняются в Supabase и появляются у остальных автоматически.</span></div>
-    <div class="scroll"><div id="gantt" class="gantt"></div></div>
-    <div class="notice">Тяни за середину — двигай проект. За края — меняй начало/конец. Шаг 1 день. Тонкая цветная полоса внутри проекта — назначенный QA.</div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head"><strong>Контроль capacity</strong><span>Показаны слоты видимых разработчиков выбранной команды. Лимиты бизнес/тех — общие для роадмапы. QA — по слотам за неделю.</span></div>
-    <div class="scroll"><div id="capacity" class="capacity"></div></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head"><strong>Данные</strong><span>Активности выбранной команды. Экспорт JSON содержит полную роадмапу.</span></div>
-    <div class="table-wrap"><table id="dataTable"></table></div>
-  </div>
+  <div class="gantt-status" id="ganttStatus" role="status" aria-live="polite" hidden><span id="ganttStatusText"></span><button id="dismissGanttStatus" type="button" aria-label="Закрыть уведомление">×</button></div>
 </div>
+<div class="link-drag-tip" id="linkDragTip" hidden></div>
 
 <div class="modal" id="configModal">
   <div class="dialog auth-dialog">
@@ -270,7 +409,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
         <legend id="developerFormTitle">Новый разработчик</legend>
         <div class="formgrid">
           <div class="field"><label for="developerName">Имя</label><input id="developerName" required maxlength="80" autocomplete="off"></div>
-          <div class="field"><label for="developerRole">Направление</label><select id="developerRole" required><option value="">Выберите направление</option><option value="DS">DS · Data Science</option><option value="Go">Go · Разработка</option></select></div>
+          <div class="field"><label for="developerRole">Команда</label><select id="developerRole" required><option value="">Выберите команду</option><option value="DS">DS · Data Science</option><option value="Go">Go · Разработка</option></select></div>
         </div>
         <p class="form-error" id="developerError" role="alert" hidden></p>
         <div class="modal-actions"><button class="btn" type="button" id="closeDevelopers">Закрыть</button><button class="btn primary" type="submit" id="saveDeveloper">Добавить</button></div>
@@ -280,6 +419,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
 </div>
 
 <script src="./static/js/config.js"></script>
+<script src="./static/js/link-routing.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
@@ -289,11 +429,12 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   const DAY = 86400000;
   const DAY_PX = 14;
   const WEEK_PX = DAY_PX * 7;
+  const ROW_STEP = 68, BAR_TOP = 16;
   const QA_COLORS = ["#8b5cf6","#14b8a6","#ec4899","#f97316","#06b6d4","#84cc16","#a855f7","#eab308","#64748b","#dc2626"];
   const cfg = window.ROADMAP_CONFIG || {};
   const loginDomain = typeof cfg.loginDomain==="string"?cfg.loginDomain.trim().toLowerCase():"";
   // No roadmap data is bundled or restored before an authenticated read.
-  const emptyState = () => ({settings:{horizonStart:fmt(new Date()),quarters:1,businessSlots:4,techSlots:2,developers:[]},activities:[]});
+  const emptyState = () => ({settings:{horizonStart:fmt(new Date()),quarters:1,businessSlots:4,techSlots:2,dsBusinessSlots:3,dsTechSlots:1,developers:[],activityLinks:[]},activities:[]});
   const roadmapId = cfg.roadmapId || "main";
 
   const parseDate = s => new Date(s + "T00:00:00");
@@ -316,7 +457,8 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   });
   const dbToSettings = r => ({
     horizonStart:r.horizon_start,quarters:r.quarters,businessSlots:r.business_slots,techSlots:r.tech_slots,
-    developers:r.developers||[],version:r.version,updated_at:r.updated_at,updated_by_email:r.updated_by_email
+    dsBusinessSlots:r.ds_business_slots??3,dsTechSlots:r.ds_tech_slots??1,
+    developers:r.developers||[],activityLinks:Array.isArray(r.activity_links)?r.activity_links:[],version:r.version,updated_at:r.updated_at,updated_by_email:r.updated_by_email
   });
 
   let state = emptyState();
@@ -335,18 +477,29 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   let reloadTimer = null;
   let pendingRealtimeReload = false;
   let developersAvailable = false;
+  let dsCapacityAvailable = false;
   let editingDeveloperId = null;
   let developerEditingVersion = null;
   let savingDeveloper = false;
   let developerReturnFocus = null;
   let developerDragId = null;
+  let linksAvailable = false;
+  let linkMode = false;
+  let linkSource = null;
+  let selectedLink = null;
+  let savingLinks = false;
+  let linkDrag = null;
+  let linkTarget = null;
+  let statusTimer = null;
+  const barLayout = new Map();
 
   // Remove the cache left by the previously public version.
   try{localStorage.removeItem("roadmap-cloud-cache-v1");}catch(e){}
 
   function setSync(kind,text){
     syncDot.className="sync-dot "+(kind||"");
-    syncText.textContent=text;
+    syncText.textContent=kind==="ok"?"Сохранено":kind==="busy"?"Синхронизация…":text;
+    syncText.title=text;
   }
   function latestChange(){
     const values=[
@@ -395,7 +548,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   }
   function developerBadge(d){
     const role=d.role==="DS"?"ds":d.role==="Go"?"go":"";
-    return `<span class="role-badge ${role}">${role?esc(d.role):"Без направления"}</span>`;
+    return `<span class="role-badge ${role}">${role?esc(d.role):"Без команды"}</span>`;
   }
   function resources(){
     return developers().map(d=>d.id);
@@ -428,9 +581,10 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     setEditability();
     syncSettings();
     const h=horizon(),period=`${fmtShort(fmt(h.start))}.${h.start.getFullYear()} — ${fmtShort(fmt(h.quarterEnd))}.${h.quarterEnd.getFullYear()}`;
-    roadmapTitle.textContent=`Командная роадмапа · ${period}`;
-    ganttTitle.textContent=`Роадмапа · ${period}`;
-    filterSummary.textContent=`Разработчиков: ${visibleDevelopers().length} из ${developers().length} · активностей: ${visibleActivities().length} · скрыто вручную: ${developers().filter(d=>d.hidden).length}`;
+    roadmapTitle.textContent="Роадмапа";
+    roadmapPeriod.textContent=period;
+    ganttTitle.textContent=`План проектов · ${period}`;
+    filterSummary.textContent=`Разработчиков: ${visibleDevelopers().length} · проектов: ${visibleActivities().filter(a=>a.type!=="Отпуск").length}`;
     renderLegend();
     renderGantt();
     renderCapacity();
@@ -444,6 +598,11 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     quarters.value=String(state.settings.quarters);
     businessSlots.value=state.settings.businessSlots;
     techSlots.value=state.settings.techSlots;
+    dsBusinessSlots.value=state.settings.dsBusinessSlots;
+    dsTechSlots.value=state.settings.dsTechSlots;
+    dsBusinessSlots.disabled=!canEdit||!dsCapacityAvailable;
+    dsTechSlots.disabled=!canEdit||!dsCapacityAvailable;
+    dsCapacityHint.hidden=dsCapacityAvailable;
   }
   function renderLegend(){
     const parts=[
@@ -458,7 +617,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   }
   function buildHeader(container,h){
     const wrap=document.createElement("div"); wrap.className="header-row";
-    wrap.innerHTML=`<div class="resource-label" style="height:84px;align-items:center;font-size:11px;font-weight:800;background:#f8fafc">Ресурс</div>`;
+    wrap.innerHTML=`<div class="resource-label" style="height:84px;align-items:center;font-size:11px;font-weight:650;color:#667085;background:#f8fafc">Разработчик</div>`;
     const hz=document.createElement("div"); hz.className="horizon"; hz.style.width=h.width+"px";
     hz.innerHTML=`<div class="quarter-row"></div><div class="month-row"></div><div class="week-row"></div>`;
     wrap.appendChild(hz); container.appendChild(wrap);
@@ -500,24 +659,53 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   }
   function renderGantt(){
     gantt.innerHTML="";
-    const h=horizon(); gantt.style.width=(190+h.width)+"px"; buildHeader(gantt,h);
-    if(!visibleDevelopers().length){
+    barLayout.clear();
+    const h=horizon(); gantt.style.width=(190+h.width+24)+"px"; buildHeader(gantt,h);
+    const visible=visibleDevelopers();
+    let rowTop=0;
+    if(!visible.length){
       const empty=document.createElement("div");empty.className="empty-state";empty.textContent="Нет видимых разработчиков. Измените фильтр команды или откройте «Разработчики», чтобы вернуть скрытые строки.";gantt.appendChild(empty);
     }
-    for(const {id:res} of visibleDevelopers()){
+    for(const [position,{id:res}] of visible.entries()){
       const items=state.activities.filter(a=>a.resource===res && overlap(a.start,a.end,fmt(h.start),fmt(h.end)));
-      const pack=packLevels(items), laneH=pack.count*50+10;
+      const pack=packLevels(items), laneH=Math.max(88,pack.count*ROW_STEP+20);
       const developer=developerFor(res), role=developer.role==="DS"?"ds":developer.role==="Go"?"go":"unknown";
       const row=document.createElement("div"); row.className=`resource-row role-${role}`;
+      row.dataset.resource=res;
       const left=document.createElement("div"); left.className="resource-label resource-name"; left.style.height=laneH+"px";
       const edit=document.createElement("button"); edit.className="resource-button";
       edit.title=`Редактировать разработчика: ${developer.name}`;
       edit.innerHTML=`<span class="developer-name">${esc(developer.name)}</span>${developerBadge(developer)}`;
       edit.onclick=()=>openDevelopers(res);left.appendChild(edit);
+      const controls=document.createElement("div");controls.className="row-controls";
+      const disabled=!canEdit||savingDeveloper||savingLinks;
+      controls.innerHTML=`<button type="button" class="small-btn developer-grip" data-inline="grip" draggable="${!disabled}" aria-label="Перетащить ${escAttr(developer.name)}" title="Перетащить строку" ${disabled?"disabled":""}>⋮⋮</button>
+        <button type="button" class="small-btn" data-inline="up" aria-label="Поднять ${escAttr(developer.name)}" title="Поднять строку" ${disabled||position===0?"disabled":""}>↑</button>
+        <button type="button" class="small-btn" data-inline="down" aria-label="Опустить ${escAttr(developer.name)}" title="Опустить строку" ${disabled||position===visible.length-1?"disabled":""}>↓</button>
+        <button type="button" class="small-btn" data-inline="hide" aria-label="Скрыть ${escAttr(developer.name)}" title="Скрыть для всей команды" ${disabled?"disabled":""}>Скрыть</button>`;
+      controls.querySelector('[data-inline="up"]').onclick=()=>changeDeveloperView("move-visible",res,-1,"gantt");
+      controls.querySelector('[data-inline="down"]').onclick=()=>changeDeveloperView("move-visible",res,1,"gantt");
+      controls.querySelector('[data-inline="hide"]').onclick=()=>changeDeveloperView("visibility",res,true,"gantt");
+      const grip=controls.querySelector('[data-inline="grip"]');
+      grip.ondragstart=e=>{
+        if(savingDeveloper||savingLinks||!canEdit){e.preventDefault();return;}
+        developerDragId=res;e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",res);
+      };
+      grip.ondragend=clearDeveloperDrag;
+      row.ondragover=e=>{
+        if(!developerDragId||developerDragId===res||savingDeveloper||savingLinks)return;
+        e.preventDefault();e.dataTransfer.dropEffect="move";row.classList.add("drop-target");
+      };
+      row.ondragleave=()=>row.classList.remove("drop-target");
+      row.ondrop=e=>{
+        e.preventDefault();const id=developerDragId;clearDeveloperDrag();
+        if(id)return changeDeveloperView("drop",id,res,"gantt");
+      };
+      left.appendChild(controls);
       const lane=document.createElement("div"); lane.className="lane"; lane.style.height=laneH+"px"; lane.style.width=h.width+"px"; addWeekendShade(lane,h);
       const today=new Date(); today.setHours(0,0,0,0);
       if(today>=h.start&&today<=h.end){
-        const t=document.createElement("div"); t.className="today"; t.style.left=((today-h.start)/DAY*DAY_PX)+"px"; t.innerHTML="<span>сегодня</span>"; lane.appendChild(t);
+        const t=document.createElement("div"); t.className="today"; t.style.left=((today-h.start)/DAY*DAY_PX)+"px"; lane.appendChild(t);
       }
       for(const a of items){
         const level=pack.map.get(a.id)||0;
@@ -527,26 +715,238 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
         const widthPx=Math.max(DAY_PX,((clipEnd-clipStart)/DAY+1)*DAY_PX);
         const bar=document.createElement("div");
         bar.className=`bar ${a.type==="Бизнес"?"biz":a.type==="Технический"?"tech":"vac"} ${a.carry?"carry":""}`;
-        bar.style.left=leftPx+"px"; bar.style.width=widthPx+"px"; bar.style.top=(level*50+6)+"px";
+        bar.style.left=leftPx+"px"; bar.style.width=widthPx+"px"; bar.style.top=(level*ROW_STEP+BAR_TOP)+"px";
         bar.dataset.id=a.id;
+        bar.tabIndex=0;bar.setAttribute("role","button");
+        bar.setAttribute("aria-label",`${a.name}, ${developer.name}, ${a.start} — ${a.end}`);
         bar.title=`${a.name}\n${a.start} — ${a.end}`;
         bar.innerHTML=`<div class="handle resize-left" data-mode="resize-left"></div><div class="drag-area" data-mode="move"></div><div class="handle resize-right" data-mode="resize-right"></div>
           <div class="name">${esc(a.name)}</div><div class="dates">${fmtShort(a.start)}–${fmtShort(a.end)}${a.qa?` · ${esc(a.qa)}`:""}</div>${a.qa?`<div class="qa-strip" style="background:${qaColor(a.qa)}"></div>`:""}`;
-        bar.addEventListener("click",e=>{ if(Date.now()<suppressClickUntil||!canEdit)return; if(!e.target.classList.contains("handle"))openEditor(a.id);});
+        bar.addEventListener("click",e=>{ if(Date.now()<suppressClickUntil||!canEdit)return; if(linkMode){chooseLinkEndpoint(a.id);return;} if(!e.target.classList.contains("handle"))openEditor(a.id);});
+        bar.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();if(linkMode)chooseLinkEndpoint(a.id);else openEditor(a.id);}});
         if(canEdit) bar.addEventListener("pointerdown",startDrag);
         lane.appendChild(bar);
+        let port=null;
+        if(a.type!=="Отпуск"){
+          port=document.createElement("button");port.className="link-port";port.type="button";port.dataset.linkFrom=a.id;port.textContent="↗";
+          port.setAttribute("aria-label",`Создать связь от «${a.name}»`);port.title="Потяните к другому проекту или нажмите, чтобы выбрать цель";
+          port.onpointerdown=e=>startLinkDrag(e,a.id);
+          port.onclick=e=>{e.stopPropagation();if(Date.now()<suppressClickUntil)return;if(linkMode&&linkSource&&linkSource!==a.id)chooseLinkEndpoint(a.id);else startLinkFrom(a.id);};
+          lane.appendChild(port);
+        }
+        barLayout.set(a.id,{bar,port,rowTop});positionLinkPort(a.id);
       }
       row.append(left,lane); gantt.appendChild(row);
+      rowTop+=laneH+1;
+    }
+    const layer=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    layer.classList.add("link-layer");layer.setAttribute("width",h.width+24);layer.setAttribute("height",rowTop);
+    gantt.appendChild(layer);
+    if(linkSource&&!barLayout.has(linkSource)){stopLinkDrag();linkMode=false;linkSource=null;linkTarget=null;}
+    if(linkTarget&&!barLayout.has(linkTarget))linkTarget=null;
+    if(selectedLink&&(!barLayout.has(selectedLink.from)||!barLayout.has(selectedLink.to)||!activityLinks().some(l=>sameLink(l,selectedLink))))selectedLink=null;
+    renderLinks();updateLinkControls();updateInlineDeveloperControls();
+  }
+
+  // Connections use activity IDs so moving, resizing or reordering preserves them.
+  const sameLink=(a,b)=>a?.from===b?.from&&a?.to===b?.to;
+  function activityLinks(links=state.settings.activityLinks,activities=state.activities){
+    const ids=new Set(activities.filter(a=>a.type!=="Отпуск").map(a=>a.id)),seen=new Set();
+    return (Array.isArray(links)?links:[]).filter(l=>{
+      if(!l||typeof l.from!=="string"||typeof l.to!=="string"||l.from===l.to||!ids.has(l.from)||!ids.has(l.to))return false;
+      const key=JSON.stringify([l.from,l.to]);if(seen.has(key))return false;seen.add(key);return true;
+    }).map(l=>({from:l.from,to:l.to}));
+  }
+  function barBox(id){
+    const entry=barLayout.get(id);if(!entry)return null;
+    return {x:parseFloat(entry.bar.style.left),y:entry.rowTop+parseFloat(entry.bar.style.top),w:parseFloat(entry.bar.style.width),h:38};
+  }
+  function positionLinkPort(id){
+    const entry=barLayout.get(id);if(!entry?.port)return;
+    const box=barBox(id);
+    entry.port.style.left=(box.x+box.w/2+Math.min(4,box.w/4)-11)+"px";
+    entry.port.style.top=(parseFloat(entry.bar.style.top)+34)+"px";
+  }
+  function connectionPath(a,b){
+    if(!b.h){
+      const sx=a.x+a.w/2+Math.min(4,a.w/4),sy=a.y+a.h,my=Math.max(sy+16,b.y);
+      return RoadmapLinks.roundedPath([{x:sx,y:sy},{x:sx,y:my},{x:b.x,y:my},{x:b.x,y:b.y}].filter((p,i,all)=>!i||p.x!==all[i-1].x||p.y!==all[i-1].y));
+    }
+    const layer=gantt.querySelector(".link-layer"),boxes=[...barLayout.keys()].map(barBox);
+    return RoadmapLinks.route(a,b,boxes,Number(layer.getAttribute("width")),Number(layer.getAttribute("height"))).path;
+  }
+  function renderLinks(){
+    const layer=gantt.querySelector(".link-layer");if(!layer)return;
+    layer.innerHTML='<defs>'+[["ds","#7c3aed"],["go","#0e7490"],["other","#475467"]].map(([role,color])=>`<marker id="linkArrow-${role}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="${color}"/></marker>`).join("")+'</defs>';
+    for(const link of activityLinks()){
+      const from=barBox(link.from),to=barBox(link.to);if(!from||!to)continue;
+      const d=connectionPath(from,to),ns="http://www.w3.org/2000/svg";
+      const source=state.activities.find(a=>a.id===link.from),role=developerFor(source.resource).role;
+      const color=role==="DS"?"#7c3aed":role==="Go"?"#0e7490":"#475467";
+      const group=document.createElementNS(ns,"g");group.setAttribute("class","link-group");group.style.setProperty("--link-color",color);
+      const halo=document.createElementNS(ns,"path");halo.setAttribute("d",d);halo.setAttribute("class","link-halo");
+      const line=document.createElementNS(ns,"path");
+      line.setAttribute("d",d);line.setAttribute("class","activity-link"+(sameLink(link,selectedLink)?" selected":""));
+      line.setAttribute("marker-end",`url(#linkArrow-${role==="DS"?"ds":role==="Go"?"go":"other"})`);line.dataset.from=link.from;line.dataset.to=link.to;
+      const hit=document.createElementNS(ns,"path");hit.setAttribute("d",d);hit.setAttribute("class","link-hit");
+      hit.setAttribute("tabindex","0");hit.setAttribute("role","button");
+      const name=id=>state.activities.find(a=>a.id===id)?.name||"";
+      const label=`${name(link.from)} → ${name(link.to)}`;
+      hit.setAttribute("aria-label",`Связь: ${label}. Выбрать для удаления`);
+      const title=document.createElementNS(ns,"title");title.textContent=label;hit.appendChild(title);
+      const select=()=>{if(!canEdit||linkMode||savingLinks)return;selectedLink=link;updateLinkControls();renderLinks();deleteLink.focus();};
+      hit.addEventListener("click",select);
+      hit.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select();}});
+      group.addEventListener("pointerenter",()=>{if(!linkMode)highlightLink(link);});
+      group.addEventListener("pointerleave",()=>highlightLink(selectedLink));
+      group.append(halo,line,hit);layer.appendChild(group);
+    }
+    if(linkMode&&linkSource){
+      const preview=document.createElementNS("http://www.w3.org/2000/svg","path");preview.setAttribute("class","link-preview");preview.setAttribute("marker-end","url(#linkArrow-ds)");layer.appendChild(preview);
+    }
+    highlightLink(selectedLink);
+  }
+  function highlightLink(link){
+    for(const [id,{bar}] of barLayout)bar.classList.toggle("link-related",!!link&&(id===link.from||id===link.to));
+  }
+  function updateLinkControls(){
+    addLink.disabled=!canEdit||!linksAvailable||savingLinks||savingDeveloper;
+    addLink.setAttribute("aria-pressed",String(linkMode));
+    addLink.title=linksAvailable?"Выберите два проекта или потяните ↗ между ними":"Связи пока не подключены. Владельцу нужно обновить базу роадмапы.";
+    linkAvailability.hidden=linksAvailable;
+    linkAvailability.textContent=linksAvailable?"":addLink.title;
+    linkContext.hidden=!linkMode&&!selectedLink&&!savingLinks;
+    cancelLink.hidden=!linkMode&&!selectedLink;cancelLink.disabled=savingLinks;
+    cancelLink.textContent=selectedLink?"Снять выбор":"Отменить";
+    deleteLink.hidden=!selectedLink;deleteLink.disabled=!canEdit||savingLinks||savingDeveloper;
+    reverseLink.hidden=!selectedLink;reverseLink.disabled=deleteLink.disabled;
+    gantt.classList.toggle("linking",linkMode);
+    gantt.classList.toggle("has-link-target",!!linkTarget);
+    for(const [id,{bar,port}] of barLayout){
+      bar.classList.toggle("link-source",id===linkSource);bar.classList.toggle("link-target",id===linkTarget);
+      if(port)port.disabled=!canEdit||!linksAvailable||savingLinks||savingDeveloper;
+    }
+    if(!linksAvailable)linkHint.textContent="Связи пока не подключены. Требуется обновление роадмапы владельцем.";
+    else if(savingLinks)linkHint.textContent="Сохраняю связь…";
+    else if(linkMode)linkHint.textContent=linkSource?`От «${state.activities.find(a=>a.id===linkSource)?.name||""}» → ${linkTarget?`«${state.activities.find(a=>a.id===linkTarget)?.name}»`:"выберите конечный проект"}. Esc — отмена.`:"Нажмите на первый проект, затем на второй. Или потяните ↗ от одного проекта к другому.";
+    else if(selectedLink)linkHint.textContent=`${state.activities.find(a=>a.id===selectedLink.from)?.name} → ${state.activities.find(a=>a.id===selectedLink.to)?.name}`;
+    else linkHint.textContent="";
+  }
+  function resetLinkSelection(){
+    stopLinkDrag();linkMode=false;linkSource=null;linkTarget=null;selectedLink=null;updateLinkControls();renderLinks();
+  }
+  function startLinkFrom(id){
+    if(!canEdit||!linksAvailable||savingLinks||savingDeveloper||drag)return false;
+    if(!state.activities.some(a=>a.id===id&&a.type!=="Отпуск"))return false;
+    resetLinkSelection();linkMode=true;linkSource=id;showGanttStatus("");updateLinkControls();renderLinks();return true;
+  }
+  function startLinkDrag(e,id){
+    if(e.button!==0||e.isPrimary===false||!startLinkFrom(id))return;
+    e.preventDefault();e.stopPropagation();
+    linkDrag={pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,moved:false};
+    document.addEventListener("pointermove",onLinkDrag);
+    document.addEventListener("pointerup",endLinkDrag);
+    document.addEventListener("pointercancel",cancelLinkDrag);
+  }
+  function linkTargetAt(e){
+    const viewport=gantt.parentElement.getBoundingClientRect();
+    if(viewport.width&&(e.clientX<viewport.left+190||e.clientX>viewport.right||e.clientY<viewport.top+84||e.clientY>viewport.bottom))return null;
+    const direct=e.target?.closest?.(".bar")?.dataset.id||e.target?.closest?.(".link-port")?.dataset.linkFrom;
+    const eligible=id=>id!==linkSource&&state.activities.some(a=>a.id===id&&a.type!=="Отпуск");
+    if(direct&&eligible(direct))return direct;
+    for(const [id,{bar}] of barLayout){
+      if(!eligible(id))continue;
+      const r=bar.getBoundingClientRect();
+      if(r.width&&e.clientX>=r.left-10&&e.clientX<=r.right+10&&e.clientY>=r.top-10&&e.clientY<=r.bottom+12)return id;
+    }
+    return null;
+  }
+  function drawLinkPreview(e){
+    if(!linkMode||!linkSource||savingLinks)return;
+    const layer=gantt.querySelector(".link-layer"),source=barBox(linkSource);if(!layer||!source)return;
+    const next=linkTargetAt(e);
+    if(next!==linkTarget){linkTarget=next;updateLinkControls();}
+    const rect=layer.getBoundingClientRect(),target=linkTarget?barBox(linkTarget):{x:e.clientX-rect.left,y:e.clientY-rect.top,w:0,h:0};
+    layer.querySelector(".link-preview")?.setAttribute("d",connectionPath(source,target));
+    if(linkDrag?.moved){
+      linkDragTip.hidden=false;linkDragTip.classList.toggle("ready",!!linkTarget);
+      linkDragTip.textContent=linkTarget?"Отпустите, чтобы связать":"Перетащите к другому проекту · Esc — отмена";
+      linkDragTip.style.left=Math.max(8,Math.min(e.clientX+16,window.innerWidth-260))+"px";
+      linkDragTip.style.top=Math.max(8,Math.min(e.clientY+18,window.innerHeight-50))+"px";
+    }
+  }
+  function onLinkDrag(e){
+    if(!linkDrag||e.pointerId!==linkDrag.pointerId)return;
+    e.preventDefault();
+    if(Math.hypot(e.clientX-linkDrag.startX,e.clientY-linkDrag.startY)>4)linkDrag.moved=true;
+    const scroller=gantt.parentElement,r=scroller.getBoundingClientRect();
+    if(r.width){
+      if(e.clientX>r.right-35)scroller.scrollLeft+=18;else if(e.clientX<r.left+225)scroller.scrollLeft-=18;
+      if(e.clientY>r.bottom-35)scroller.scrollTop+=14;else if(e.clientY<r.top+115)scroller.scrollTop-=14;
+    }
+    drawLinkPreview(e);
+  }
+  function stopLinkDrag(){
+    if(linkDrag?.moved)suppressClickUntil=Date.now()+350;
+    linkDrag=null;linkDragTip.hidden=true;linkDragTip.textContent="";
+    document.removeEventListener("pointermove",onLinkDrag);
+    document.removeEventListener("pointerup",endLinkDrag);
+    document.removeEventListener("pointercancel",cancelLinkDrag);
+    if(pendingRealtimeReload){pendingRealtimeReload=false;scheduleRemoteReload();}
+  }
+  async function endLinkDrag(e){
+    if(!linkDrag||e.pointerId!==linkDrag.pointerId)return;
+    const moved=linkDrag.moved,target=linkTargetAt(e);stopLinkDrag();
+    if(!moved)return;
+    if(target){await chooseLinkEndpoint(target);return;}
+    resetLinkSelection();showGanttStatus("Связь не создана. Отпустите стрелку на другом проекте.");
+  }
+  function cancelLinkDrag(e){
+    if(linkDrag&&e.pointerId===linkDrag.pointerId){resetLinkSelection();showGanttStatus("");}
+  }
+  function showGanttStatus(message,error=false){
+    clearTimeout(statusTimer);
+    ganttStatusText.textContent=message;ganttStatus.hidden=!message;ganttStatus.classList.toggle("error",error);
+    if(message&&!error)statusTimer=setTimeout(()=>{ganttStatus.hidden=true;ganttStatusText.textContent="";},6000);
+  }
+  async function chooseLinkEndpoint(id){
+    if(!canEdit||!linksAvailable||!linkMode||savingLinks||savingDeveloper)return;
+    const activity=state.activities.find(a=>a.id===id);
+    if(!activity||activity.type==="Отпуск"){showGanttStatus("Выберите проект: отпуск не участвует в связях.",true);return;}
+    if(!linkSource){linkSource=id;showGanttStatus("");updateLinkControls();renderLinks();return;}
+    if(linkSource===id){showGanttStatus("Выберите другой проект.",true);return;}
+    const link={from:linkSource,to:id},links=activityLinks();
+    if(links.some(l=>sameLink(l,link))){showGanttStatus("Такая стрелка уже есть. Для обратной связи выберите проекты в обратном порядке.",true);return;}
+    await saveLinks([...links,link],"Связь сохранена для всей команды.");
+  }
+  async function saveLinks(links,message){
+    if(!canEdit||!linksAvailable||savingLinks||savingDeveloper)return;
+    const epoch=sessionEpoch,version=state.settings.version;
+    let saved=false;
+    savingLinks=true;showGanttStatus("");updateLinkControls();updateInlineDeveloperControls();
+    try{
+      await saveSettingsRemote({activityLinks:links},version);
+      resetLinkSelection();showGanttStatus(message);saved=true;
+    }catch(e){
+      if(epoch!==sessionEpoch)return;
+      showGanttStatus(e.message==="CONFLICT"?"Связи или настройки уже изменены другим участником. Загружена актуальная версия — повторите действие.":"Не удалось сохранить связи. Повторите попытку.",true);
+      setSync("err","Связи не сохранены");
+    }finally{
+      if(epoch===sessionEpoch){savingLinks=false;updateLinkControls();updateInlineDeveloperControls();if(saved)addLink.focus();}
     }
   }
 
   function weeklyStats(ws){
     const s=fmt(ws),we=fmt(addDays(ws,6)),active=visibleActivities().filter(a=>overlap(a.start,a.end,s,we));
-    const unique=type=>new Set(active.filter(a=>a.type===type).map(a=>a.slot||a.name)).size;
+    const byTeam=Object.fromEntries(["DS","Go",""].map(team=>{
+      const items=active.filter(a=>developerFor(a.resource).role===team);
+      const unique=type=>new Set(items.filter(a=>a.type===type).map(a=>a.slot||a.name)).size;
+      return [team,{biz:unique("Бизнес"),tech:unique("Технический")}];
+    }));
     const vacations=new Set(active.filter(a=>a.type==="Отпуск").map(a=>a.resource)).size;
     const qaStats={};
     for(const a of active){ if(!a.qa)continue; if(!qaStats[a.qa])qaStats[a.qa]=new Set(); qaStats[a.qa].add(a.slot||a.name); }
-    return {biz:unique("Бизнес"),tech:unique("Технический"),vac:vacations,qa:Object.fromEntries(Object.entries(qaStats).map(([k,v])=>[k,v.size]))};
+    return {byTeam,vac:vacations,qa:Object.fromEntries(Object.entries(qaStats).map(([k,v])=>[k,v.size]))};
   }
   function renderCapacity(){
     const h=horizon(); capacity.innerHTML=""; capacity.style.width=(190+h.width)+"px";
@@ -554,9 +954,17 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     header.innerHTML=`<div class="cap-label">Неделя</div><div class="cap-track">${Array.from({length:h.weeks},(_,i)=>`<div class="cap-cell neutral">${fmtShort(fmt(addDays(h.start,i*7)))}</div>`).join("")}</div>`;
     capacity.appendChild(header);
     const stats=Array.from({length:h.weeks},(_,i)=>weeklyStats(addDays(h.start,i*7)));
+    const selected=teamFilter.value;
+    const hasUnassigned=visibleActivities().some(a=>a.type!=="Отпуск"&&!developerFor(a.resource).role);
+    const teams=selected==="all"?["DS","Go",...(hasUnassigned?[""]:[])]:[selected==="unassigned"?"":selected];
     const metrics=[
-      ["Бизнес-слоты",s=>s.biz,Number(state.settings.businessSlots)],
-      ["Техслоты",s=>s.tech,Number(state.settings.techSlots)],
+      ...teams.flatMap(team=>{
+        const label=team||"Без команды",ds=team==="DS";
+        return [
+          [`${label} · Бизнес`,s=>s.byTeam[team].biz,team?Number(ds?state.settings.dsBusinessSlots:state.settings.businessSlots):null],
+          [`${label} · Технические`,s=>s.byTeam[team].tech,team?Number(ds?state.settings.dsTechSlots:state.settings.techSlots):null]
+        ];
+      }),
       ["Отпуска",s=>s.vac,null],
       ...qas().map(q=>[q,s=>s.qa[q]||0,1])
     ];
@@ -607,6 +1015,8 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     if(sr.error) throw sr.error;
     if(ar.error) throw ar.error;
     developersAvailable=Array.isArray(sr.data.developers);
+    dsCapacityAvailable=Number.isInteger(sr.data.ds_business_slots)&&Number.isInteger(sr.data.ds_tech_slots);
+    linksAvailable=Array.isArray(sr.data.activity_links);
     state.settings=dbToSettings(sr.data);
     state.activities=ar.data.map(dbToActivity);
     dataReady=true;
@@ -617,7 +1027,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     clearTimeout(reloadTimer);
     reloadTimer=setTimeout(async()=>{
       if(!sessionUser||!dataReady)return;
-      if(drag){pendingRealtimeReload=true;return;}
+      if(drag||linkDrag){pendingRealtimeReload=true;return;}
       try{await loadRemote();}catch(e){console.error(e);setSync("err","Ошибка синхронизации");}
     },180);
   }
@@ -686,7 +1096,10 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     if("quarters" in next)patch.quarters=next.quarters;
     if("businessSlots" in next)patch.business_slots=next.businessSlots;
     if("techSlots" in next)patch.tech_slots=next.techSlots;
+    if("dsBusinessSlots" in next)patch.ds_business_slots=slotLimit(next.dsBusinessSlots);
+    if("dsTechSlots" in next)patch.ds_tech_slots=slotLimit(next.dsTechSlots);
     if("developers" in next)patch.developers=next.developers;
+    if("activityLinks" in next)patch.activity_links=next.activityLinks;
     const {data,error}=await sb.from("roadmap_settings").update(patch).eq("id",roadmapId).eq("version",expectedVersion).select().maybeSingle();
     if(epoch!==sessionEpoch)throw new Error("Сеанс завершён.");
     if(error)throw error;
@@ -736,17 +1149,48 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   }
   function clearDeveloperDrag(){
     developerDragId=null;
-    developerList.querySelectorAll(".drop-target").forEach(el=>el.classList.remove("drop-target"));
+    document.querySelectorAll(".drop-target").forEach(el=>el.classList.remove("drop-target"));
+  }
+  function updateInlineDeveloperControls(){
+    const rows=[...gantt.querySelectorAll(".resource-row")],disabled=savingDeveloper||savingLinks||!canEdit;
+    for(const [i,row] of rows.entries()){
+      row.querySelectorAll("[data-inline]").forEach(b=>{
+        b.disabled=disabled||(b.dataset.inline==="up"&&i===0)||(b.dataset.inline==="down"&&i===rows.length-1);
+        if(b.dataset.inline==="grip")b.draggable=!disabled;
+      });
+    }
+    const hidden=developers().filter(d=>d.hidden).length;
+    restoreDevelopers.hidden=!hidden;restoreDevelopers.disabled=disabled;
+    restoreDevelopers.textContent="Вернуть всех";
+    renderPeoplePicker();
+  }
+  function renderPeoplePicker(){
+    const all=developers(),disabled=!canEdit||savingDeveloper||savingLinks,query=peopleSearch.value.trim().toLocaleLowerCase("ru-RU");
+    peopleCount.textContent=`${all.filter(d=>!d.hidden).length} / ${all.length}`;
+    const matched=all.filter(d=>d.name.toLocaleLowerCase("ru-RU").includes(query));
+    peopleOptions.innerHTML=["DS","Go",""].map(role=>{
+      const items=matched.filter(d=>d.role===role);if(!items.length)return "";
+      return `<div class="people-group">${role||"Без команды"}</div>`+items.map(d=>`<label class="people-option"><span class="person-name">${esc(d.name)}</span><input type="checkbox" class="people-switch" data-person="${escAttr(d.id)}" aria-label="Показывать ${escAttr(d.name)}" ${d.hidden?"":"checked"} ${disabled?"disabled":""}></label>`).join("");
+    }).join("")||'<div class="empty-state">Никого не найдено</div>';
+    peopleOptions.querySelectorAll("[data-person]").forEach(input=>input.onchange=()=>changeDeveloperView("visibility",input.dataset.person,!input.checked,"people"));
+    const hidden=all.filter(d=>d.hidden);
+    hiddenPeople.hidden=!hidden.length;hiddenPeopleRow.hidden=!hidden.length;
+    hiddenPeople.innerHTML='<span>Скрыты</span>'+hidden.slice(0,3).map(d=>`<button class="person-chip" type="button" data-restore="${escAttr(d.id)}" aria-label="Показать ${escAttr(d.name)}" ${disabled?"disabled":""}><span>${esc(d.name)}</span><b aria-hidden="true">+</b></button>`).join("")+(hidden.length>3?`<button class="person-chip" type="button" data-more-hidden>Ещё ${hidden.length-3}</button>`:"");
+    hiddenPeople.querySelectorAll("[data-restore]").forEach(b=>b.onclick=()=>changeDeveloperView("visibility",b.dataset.restore,false,"gantt"));
+    const moreHidden=hiddenPeople.querySelector("[data-more-hidden]");if(moreHidden)moreHidden.onclick=e=>{e.stopPropagation();peopleSearch.value="";renderPeoplePicker();peopleMenu.open=true;};
+    showPeople.disabled=disabled||!hidden.length;editPeople.disabled=disabled;
   }
   function setDeveloperBusy(busy){
     savingDeveloper=busy;developerFields.disabled=busy;newDeveloper.disabled=busy;
-    renderDeveloperList();
+    renderDeveloperList();updateInlineDeveloperControls();updateLinkControls();
   }
-  async function changeDeveloperView(action,id,value){
-    if(!canEdit||savingDeveloper)return;
+  async function changeDeveloperView(action,id,value,origin="modal"){
+    if(!canEdit||savingDeveloper||savingLinks)return;
     showDeveloperError("");
+    if(origin!=="modal")showGanttStatus("");
     if(!developersAvailable){
-      showDeveloperError("Управление разработчиками пока не подключено. Требуется обновление базы роадмапы.");renderDeveloperList();return;
+      const message="Управление разработчиками пока не подключено. Требуется обновление базы роадмапы.";
+      showDeveloperError(message);if(origin!=="modal")showGanttStatus(message,true);renderDeveloperList();renderPeoplePicker();return;
     }
     let next=developers().map(d=>({...d}));
     const index=next.findIndex(d=>d.id===id);
@@ -754,27 +1198,40 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     else if(index<0)return;
     else if(action==="visibility")next[index].hidden=value;
     else{
-      const target=action==="move"?index+value:next.findIndex(d=>d.id===value);
+      const visible=visibleDevelopers(),neighbor=visible[visible.findIndex(d=>d.id===id)+value];
+      const target=action==="move-visible"?next.findIndex(d=>d.id===neighbor?.id):action==="move"?index+value:next.findIndex(d=>d.id===value);
       if(target<0||target>=next.length||target===index)return;
       next.splice(target,0,next.splice(index,1)[0]);
     }
     const expectedVersion=state.settings.version,formIsCurrent=developerEditingVersion===expectedVersion;
-    const epoch=sessionEpoch,scrollTop=developerList.scrollTop;
+    const epoch=sessionEpoch,scrollTop=developerList.scrollTop,focusAction=document.activeElement?.dataset.inline;
     setDeveloperBusy(true);developerViewStatus.textContent="Сохраняю общий вид…";
     try{
       next=validateDevelopers(next.map((d,order)=>({...d,order})));
       await saveSettingsRemote({developers:next},expectedVersion);
       if(formIsCurrent)developerEditingVersion=state.settings.version;
       developerViewStatus.textContent="Общий вид сохранён для всей команды.";
+      if(origin!=="modal")showGanttStatus(action==="visibility"?(value?"Разработчик скрыт для всей команды. Нажмите на его имя над диаграммой, чтобы вернуть.":"Разработчик снова виден для всей команды."):"Общий вид сохранён для всей команды.");
     }catch(e){
       if(epoch!==sessionEpoch)return;
       developerViewStatus.textContent="Вид не сохранён.";
       showDeveloperError(e.message==="CONFLICT"?"Список уже изменён другим участником. Загружена актуальная версия — повторите изменение.":"Ошибка сохранения вида: "+e.message);
+      if(origin!=="modal")showGanttStatus(developerError.textContent,true);
+      setSync("err","Вид не сохранён");
     }finally{
       if(epoch===sessionEpoch){
         setDeveloperBusy(false);developerList.scrollTop=scrollTop;
-        const control=[...developerList.querySelectorAll("[data-visible]")].find(el=>el.dataset.visible===id);
-        (control||newDeveloper).focus();
+        if(origin==="gantt"){
+          const row=[...gantt.querySelectorAll(".resource-row")].find(el=>el.dataset.resource===id);
+          const control=row&&[...row.querySelectorAll("[data-inline]")].find(el=>el.dataset.inline===focusAction&&!el.disabled);
+          (control||row?.querySelector(".resource-button")||(restoreDevelopers.hidden?manageDevelopers:restoreDevelopers)).focus();
+        }else if(origin==="people"){
+          const control=[...peopleOptions.querySelectorAll("[data-person]")].find(el=>el.dataset.person===id);
+          (control||peopleSearch).focus();
+        }else{
+          const control=[...developerList.querySelectorAll("[data-visible]")].find(el=>el.dataset.visible===id);
+          (control||newDeveloper).focus();
+        }
       }
     }
   }
@@ -811,7 +1268,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     const ids=new Set(),names=new Set();
     return items.map((d,index)=>{
       if(!d||typeof d.id!=="string"||!d.id.trim()||typeof d.name!=="string"||!d.name.trim()||d.name.trim().length>80||!["","DS","Go"].includes(d.role)){
-        throw new Error("У разработчика должны быть ID, имя до 80 символов и направление DS или Go.");
+        throw new Error("У разработчика должны быть ID, имя до 80 символов и команда DS или Go.");
       }
       const name=d.name.trim(),key=name.toLocaleLowerCase("ru-RU");
       if(ids.has(d.id)||names.has(key))throw new Error("Разработчик с таким именем или ID уже существует.");
@@ -854,7 +1311,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
 
   // ---------- Drag ----------
   function startDrag(e){
-    if(!canEdit)return;
+    if(!canEdit||linkMode||savingLinks||e.button!==0)return;
     const bar=e.currentTarget,id=bar.dataset.id,a=state.activities.find(x=>x.id===id);if(!a)return;
     const mode=e.target.dataset.mode||(e.target.closest(".drag-area")?"move":null);if(!mode)return;
     e.preventDefault();e.stopPropagation();
@@ -877,12 +1334,18 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     drag.bar.style.left=(((clipStart-h.start)/DAY)*DAY_PX)+"px";
     drag.bar.style.width=Math.max(DAY_PX,((clipEnd-clipStart)/DAY+1)*DAY_PX)+"px";
     const dates=drag.bar.querySelector(".dates");if(dates)dates.textContent=`${fmtShort(ns)}–${fmtShort(ne)}`;
+    positionLinkPort(drag.id);
+    renderLinks();
   }
-  async function endDrag(){
+  async function endDrag(event){
     document.removeEventListener("pointermove",onDrag);
+    document.removeEventListener("pointerup",endDrag);
+    document.removeEventListener("pointercancel",endDrag);
     if(!drag)return;
     const d=drag;drag=null;
-    if(!d.moved){openEditor(d.id);return;}
+    d.bar.classList.remove("dragging");
+    if(event?.type==="pointercancel"){render();if(pendingRealtimeReload){pendingRealtimeReload=false;scheduleRemoteReload();}return;}
+    if(!d.moved){openEditor(d.id);if(pendingRealtimeReload){pendingRealtimeReload=false;scheduleRemoteReload();}return;}
     suppressClickUntil=Date.now()+350;
     try{
       await updateActivityRemote(d.id,d.version,{start:d.tempStart,end:d.tempEnd});
@@ -906,6 +1369,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     fCarry.value=String(!!a.carry);fComment.value=a.comment||"";
     deleteActivity.style.visibility=id?"visible":"hidden";
     editorModal.classList.add("open");
+    fName.focus();
   }
   function closeEditor(){editorModal.classList.remove("open");editingId=null;editingVersion=null;}
   async function saveEditor(){
@@ -931,6 +1395,10 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   }
 
   // ---------- JSON import/export ----------
+  function slotLimit(value){
+    if(!Number.isInteger(value)||value<1||value>20)throw new Error("Лимит слотов должен быть целым числом от 1 до 20.");
+    return value;
+  }
   function downloadBlob(text,name,type){
     const blob=new Blob([text],{type}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   }
@@ -938,7 +1406,22 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     if(!canEdit)throw new Error("Нет прав на редактирование");
     if(!x.settings||!Array.isArray(x.activities))throw new Error("Некорректный JSON");
     const importedDevelopers=validateDevelopers(x.settings.developers??[]);
+    const importedDsBusiness=slotLimit(x.settings.dsBusinessSlots??3),importedDsTech=slotLimit(x.settings.dsTechSlots??1);
+    if(!dsCapacityAvailable&&(importedDsBusiness!==3||importedDsTech!==1))throw new Error("Для импорта изменённых лимитов DS требуется обновление базы роадмапы.");
     if(importedDevelopers.length&&!developersAvailable)throw new Error("Для импорта разработчиков требуется обновление базы роадмапы.");
+    const importedLinks=x.settings.activityLinks??[];
+    if(!Array.isArray(importedLinks))throw new Error("Некорректный список связей.");
+    if(importedLinks.length&&!linksAvailable)throw new Error("Для импорта связей требуется обновление базы роадмапы.");
+    const idMap=new Map();
+    const rows=x.activities.map(a=>{
+      if(!a||typeof a!=="object")throw new Error("Некорректная активность.");
+      if(a.id&&idMap.has(a.id))throw new Error("Повторяющийся ID активности.");
+      const id=crypto.randomUUID();if(a.id)idMap.set(a.id,id);
+      return {...activityToDb(a),id};
+    });
+    const validLinks=activityLinks(importedLinks,x.activities);
+    if(validLinks.length!==importedLinks.length)throw new Error("Связи содержат повторы или ссылаются на отсутствующий проект.");
+    const remappedLinks=validLinks.map(l=>({from:idMap.get(l.from),to:idMap.get(l.to)}));
     if(!confirm("Импорт заменит все активности, разработчиков и настройки этой роадмапы в облаке. Продолжить?"))return;
     const epoch=sessionEpoch;
     setSync("busy","Импорт…");
@@ -946,14 +1429,16 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     if(epoch!==sessionEpoch)throw new Error("Сеанс завершён.");
     if(del.error)throw del.error;
     if(x.activities.length){
-      const ins=await sb.from("roadmap_activities").insert(x.activities.map(a=>activityToDb(a)));
+      const ins=await sb.from("roadmap_activities").insert(rows);
       if(epoch!==sessionEpoch)throw new Error("Сеанс завершён.");
       if(ins.error)throw ins.error;
     }
     const upd=await sb.from("roadmap_settings").update({
       horizon_start:x.settings.horizonStart,quarters:x.settings.quarters,
       business_slots:x.settings.businessSlots,tech_slots:x.settings.techSlots,
-      ...(developersAvailable?{developers:importedDevelopers}:{})
+      ...(dsCapacityAvailable?{ds_business_slots:importedDsBusiness,ds_tech_slots:importedDsTech}:{}),
+      ...(developersAvailable?{developers:importedDevelopers}:{}),
+      ...(linksAvailable?{activity_links:remappedLinks}:{})
     }).eq("id",roadmapId);
     if(epoch!==sessionEpoch)throw new Error("Сеанс завершён.");
     if(upd.error)throw upd.error;
@@ -993,9 +1478,15 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     if(!canEdit)throw new Error("Сначала войдите в систему.");
   }
   function clearPrivateView(){
+    pendingRealtimeReload=false;stopLinkDrag();
     dataReady=false;
     state=emptyState();
     developersAvailable=false;
+    dsCapacityAvailable=false;
+    linksAvailable=false;linkMode=false;linkSource=null;linkTarget=null;selectedLink=null;savingLinks=false;barLayout.clear();
+    linkHint.textContent="";showGanttStatus("");linkContext.hidden=true;cancelLink.hidden=true;deleteLink.hidden=true;reverseLink.hidden=true;restoreDevelopers.hidden=true;addLink.disabled=true;
+    peopleSearch.value="";peopleCount.textContent="";hiddenPeople.hidden=true;hiddenPeopleRow.hidden=true;
+    for(const panel of [peopleMenu,moreMenu,roadmapHelp,capacitySection,dataSection,settingsSection])panel.open=false;
     roadmapApp.hidden=true;
     accessGate.hidden=false;
     clearTimeout(reloadTimer);
@@ -1006,13 +1497,13 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     document.removeEventListener("pointercancel",endDrag);
     drag=null;
     document.querySelectorAll(".modal.open").forEach(el=>el.classList.remove("open"));
-    for(const el of [gantt,capacity,dataTable,legend,developerList,fResource,qaList])el.replaceChildren();
+    for(const el of [gantt,capacity,dataTable,legend,developerList,fResource,qaList,peopleOptions,hiddenPeople])el.replaceChildren();
     for(const el of [fName,fSlot,fStart,fEnd,fQa,fComment,developerName])el.value="";
     editingId=null;editingVersion=null;editingDeveloperId=null;developerEditingVersion=null;
     currentUser.textContent="";lastChange.textContent="";filterSummary.textContent="";
     developerViewStatus.textContent="";developerDragId=null;
     savingDeveloper=false;developerFields.disabled=false;newDeveloper.disabled=false;
-    roadmapTitle.textContent="Командная роадмапа";ganttTitle.textContent="Роадмапа";
+    roadmapTitle.textContent="Роадмапа";roadmapPeriod.textContent="";ganttTitle.textContent="План проектов";
     teamFilter.value="all";
     setEditability();
   }
@@ -1137,7 +1628,45 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     if(error){showAccessError(error,"restore");return;}
     await applySession(data.session,true);
   };
-  teamFilter.onchange=()=>{if(!drag)render();};
+  teamFilter.onchange=()=>{if(!drag&&!linkDrag)render();};
+  peopleSearch.oninput=renderPeoplePicker;
+  const popovers=[peopleMenu,moreMenu,roadmapHelp];
+  for(const popup of popovers)popup.addEventListener("toggle",()=>{
+    if(!popup.open)return;
+    for(const other of popovers)if(other!==popup)other.open=false;
+    if(popup===peopleMenu)peopleSearch.focus();
+  });
+  showPeople.onclick=()=>changeDeveloperView("show-all",null,null,"people");
+  editPeople.onclick=()=>{peopleMenu.open=false;openDevelopers();};
+  document.addEventListener("click",e=>{for(const popup of popovers)if(popup.open&&!popup.contains(e.target))popup.open=false;});
+  moreMenu.addEventListener("click",e=>{
+    if(!e.target.closest("button"))return;
+    moreMenu.open=false;
+    if(moreMenu.contains(document.activeElement))moreMenu.querySelector("summary").focus();
+  });
+  dismissGanttStatus.onclick=()=>{showGanttStatus("");gantt.parentElement.focus();};
+  gantt.parentElement.tabIndex=0;gantt.parentElement.setAttribute("aria-label","План проектов: прокрутка по датам и разработчикам");
+  restoreDevelopers.onclick=()=>changeDeveloperView("show-all",null,null,"gantt");
+  addLink.onclick=()=>{
+    if(!canEdit||!linksAvailable||savingLinks||savingDeveloper||drag)return;
+    const enable=!linkMode;resetLinkSelection();linkMode=enable;showGanttStatus("");updateLinkControls();renderLinks();
+  };
+  cancelLink.onclick=()=>{if(!savingLinks){resetLinkSelection();showGanttStatus("");addLink.focus();}};
+  deleteLink.onclick=()=>{if(selectedLink)return saveLinks(activityLinks().filter(l=>!sameLink(l,selectedLink)),"Связь удалена.");};
+  reverseLink.onclick=()=>{
+    if(!selectedLink)return;
+    const next={from:selectedLink.to,to:selectedLink.from},remaining=activityLinks().filter(l=>!sameLink(l,selectedLink));
+    if(!remaining.some(l=>sameLink(l,next)))remaining.push(next);
+    return saveLinks(remaining,"Направление связи изменено.");
+  };
+  document.addEventListener("keydown",e=>{
+    const openPopup=popovers.find(p=>p.open);
+    if(e.key==="Escape"&&openPopup){e.preventDefault();openPopup.open=false;openPopup.querySelector("summary").focus();return;}
+    if(e.key==="Escape"&&(linkMode||selectedLink)&&!savingLinks){e.preventDefault();resetLinkSelection();showGanttStatus("");addLink.focus();}
+  });
+  gantt.addEventListener("pointermove",e=>{
+    if(!linkDrag)drawLinkPreview(e);
+  });
   addActivity.onclick=()=>openEditor();
   addVacation.onclick=()=>openEditor(null,{resource:resources()[0]||"Разработчик 1",name:"Отпуск",slot:"",type:"Отпуск",start:fmt(new Date()),end:fmt(new Date()),qa:"",carry:false,status:"План",comment:""});
   manageDevelopers.onclick=()=>openDevelopers();
@@ -1165,15 +1694,19 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     finally{deleteActivity.disabled=false;}
   };
   applySettings.onclick=async()=>{
+    if(!canEdit)return;
+    const fields=[horizonStart,quarters,businessSlots,techSlots,dsBusinessSlots,dsTechSlots];
+    if(!fields.every(field=>field.disabled||field.reportValidity()))return;
     try{
       await saveSettingsRemote({
         horizonStart:horizonStart.value,quarters:Number(quarters.value),
-        businessSlots:Number(businessSlots.value)||4,techSlots:Number(techSlots.value)||2
+        businessSlots:slotLimit(Number(businessSlots.value)),techSlots:slotLimit(Number(techSlots.value)),
+        ...(dsCapacityAvailable?{dsBusinessSlots:slotLimit(Number(dsBusinessSlots.value)),dsTechSlots:slotLimit(Number(dsTechSlots.value))}:{})
       });
     }catch(e){if(e.message==="CONFLICT")alert("Настройки уже изменены другим пользователем.");else alert("Ошибка: "+e.message);}
   };
   reloadCloud.onclick=()=>loadRemote().catch(e=>{console.error(e);setSync("err","Ошибка синхронизации");});
-  exportJson.onclick=()=>{if(canEdit)downloadBlob(JSON.stringify(state,null,2),"roadmap-data.json","application/json");};
+  exportJson.onclick=()=>{if(canEdit)downloadBlob(JSON.stringify({...state,settings:{...state.settings,activityLinks:activityLinks()}},null,2),"roadmap-data.json","application/json");};
   importJson.onclick=()=>jsonFile.click();
   jsonFile.onchange=async()=>{
     const f=jsonFile.files[0];if(!f)return;
