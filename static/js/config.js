@@ -5,5 +5,7 @@
 window.ROADMAP_CONFIG = {
   supabaseUrl: "https://dxdgxtvblhoduywqmphm.supabase.co",
   supabaseKey: "sb_publishable_sD8w8n87eK-UHGLBRfRZhA_HPZ6HPTN",
-  roadmapId: "main"
+  roadmapId: "main",
+  // На сайте вводится логин; в Supabase аккаунт имеет адрес <логин>@roadmap.invalid.
+  loginDomain: "roadmap.invalid"
 };

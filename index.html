@@ -149,13 +149,14 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
 <main class="access-gate" id="accessGate">
   <div class="dialog auth-dialog">
     <h1>Командная роадмапа</h1>
-    <p>Вход для участников команды. Используйте выданные вам email и пароль.</p>
-    <form id="loginForm">
-      <div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" autocomplete="username" required></div>
+    <p id="loginHint">Вход для участников команды.</p>
+    <form id="loginForm" novalidate>
+      <div class="field"><label for="loginName" id="loginNameLabel">Логин</label><input id="loginName" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
       <div class="field"><label for="loginPassword">Пароль</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
       <button class="btn primary" id="loginSubmit" type="submit" disabled>Войти</button>
     </form>
     <p id="accessMessage" role="status" aria-live="polite">Подключение…</p>
+    <p class="sub" id="accessErrorCode" hidden></p>
     <button class="btn" id="retryAccess" type="button" hidden>Повторить загрузку</button>
     <button class="btn" id="gateSignOut" type="button" hidden>Выйти</button>
   </div>
@@ -290,6 +291,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   const WEEK_PX = DAY_PX * 7;
   const QA_COLORS = ["#8b5cf6","#14b8a6","#ec4899","#f97316","#06b6d4","#84cc16","#a855f7","#eab308","#64748b","#dc2626"];
   const cfg = window.ROADMAP_CONFIG || {};
+  const loginDomain = typeof cfg.loginDomain==="string"?cfg.loginDomain.trim().toLowerCase():"";
   // No roadmap data is bundled or restored before an authenticated read.
   const emptyState = () => ({settings:{horizonStart:fmt(new Date()),quarters:1,businessSlots:4,techSlots:2,developers:[]},activities:[]});
   const roadmapId = cfg.roadmapId || "main";
@@ -959,6 +961,34 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   }
 
   // ---------- Access ----------
+  function showAccessError(error,stage){
+    const rawCode=String(error?.code||"");
+    const code=/^[a-zA-Z0-9_-]{1,64}$/.test(rawCode)?rawCode:"";
+    const status=Number(error?.status)||0;
+    const messages={
+      invalid_credentials:loginDomain?"Не удалось войти: неверный логин или пароль.":"Не удалось войти: неверный email или пароль.",
+      email_not_confirmed:loginDomain?"Аккаунт ещё не активирован. Попросите владельца подтвердить его в Supabase.":"Email не подтверждён. Подтвердите почту по письму Supabase или попросите владельца подтвердить аккаунт.",
+      user_banned:"Учётная запись заблокирована. Обратитесь к владельцу роадмапы.",
+      over_request_rate_limit:"Слишком много попыток входа. Подождите немного и попробуйте снова.",
+      PGRST116:"Вход выполнен, но роадмапа недоступна этому аккаунту. Владельцу нужно проверить доступ пользователя к роадмапе main и наличие её настроек.",
+      "42501":"Вход выполнен, но база запретила доступ. Владельцу нужно проверить правила доступа Supabase.",
+      PGRST205:"Вход выполнен, но база роадмапы не настроена. Обратитесь к владельцу.",
+      refresh_token_not_found:"Сеанс истёк. Войдите заново.",
+      refresh_token_already_used:"Сеанс истёк. Войдите заново.",
+      session_expired:"Сеанс истёк. Войдите заново."
+    };
+    let message=messages[code];
+    if(!message&&status===429)message=messages.over_request_rate_limit;
+    if(!message&&(/fetch|network|timeout/i.test(error?.message||"")||error?.name==="AuthRetryableFetchError")){
+      message="Не удалось подключиться к Supabase. Проверьте интернет и повторите попытку.";
+    }
+    if(!message)message=stage==="login"?"Не удалось войти. Повторите попытку или передайте владельцу код ошибки.":
+      stage==="restore"?"Не удалось восстановить сеанс. Попробуйте войти заново.":
+      "Вход выполнен, но не удалось загрузить роадмапу. Повторите загрузку или передайте владельцу код ошибки.";
+    accessMessage.textContent=message;
+    accessErrorCode.textContent=`Код: ${stage}/${code||(status?`HTTP_${status}`:"CLIENT_ERROR")}`;
+    accessErrorCode.hidden=false;
+  }
   function requireAccess(){
     if(!canEdit)throw new Error("Сначала войдите в систему.");
   }
@@ -997,6 +1027,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
     loginForm.hidden=!!user;
     gateSignOut.hidden=!user;
     retryAccess.hidden=true;
+    accessErrorCode.hidden=true;accessErrorCode.textContent="";
     loadingSession=!!user;
     if(!user){accessMessage.textContent="Войдите, чтобы открыть роадмапу.";return;}
     accessMessage.textContent="Проверяем доступ…";
@@ -1005,12 +1036,13 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
       if(epoch!==sessionEpoch)return;
       accessGate.hidden=true;
       roadmapApp.hidden=false;
-      currentUser.textContent=user.email||"Участник команды";
+      const email=user.email||"";
+      currentUser.textContent=loginDomain&&email.toLowerCase().endsWith(`@${loginDomain}`)?email.slice(0,-loginDomain.length-1):email||"Участник команды";
       subscribeRealtime();
     }catch(e){
       if(epoch!==sessionEpoch)return;
       clearPrivateView();
-      accessMessage.textContent="Роадмапа недоступна. Проверьте подключение и попросите владельца проверить ваш доступ.";
+      showAccessError(e,"roadmap");
       retryAccess.hidden=false;
     }finally{
       if(epoch===sessionEpoch)loadingSession=false;
@@ -1032,15 +1064,19 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
       return;
     }
     loginSubmit.disabled=false;
-    loginEmail.focus();
+    loginName.focus();
   }
   async function signIn(event){
     event.preventDefault();
+    loginName.value=loginName.value.trim();
+    if(loginDomain)loginName.value=loginName.value.toLowerCase();
     if(!sb||!loginForm.reportValidity())return;
     loginSubmit.disabled=true;
     accessMessage.textContent="Входим…";
+    accessErrorCode.hidden=true;accessErrorCode.textContent="";
     try{
-      const {data,error}=await sb.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});
+      const email=loginDomain?`${loginName.value}@${loginDomain}`:loginName.value;
+      const {data,error}=await sb.auth.signInWithPassword({email,password:loginPassword.value});
       loginPassword.value="";
       if(error)throw error;
       sessionClosed=false;
@@ -1048,12 +1084,20 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
       await applySession(data.session);
     }catch(e){
       loginPassword.value="";
-      accessMessage.textContent="Не удалось войти. Проверьте email, пароль и подключение.";
+      showAccessError(e,"login");
     }finally{loginSubmit.disabled=false;}
   }
 
   // ---------- Init ----------
   async function init(){
+    loginName.type=loginDomain?"text":"email";
+    loginNameLabel.textContent=loginDomain?"Логин":"Email";
+    loginHint.textContent=loginDomain?"Введите выданные вам логин и пароль.":"Используйте выданные вам email и пароль.";
+    if(loginDomain){
+      loginName.pattern="[a-z0-9][a-z0-9._\\-]{0,31}";
+      loginName.maxLength=32;
+      loginName.title="От 1 до 32 символов: латинские буквы, цифры, точка, дефис или подчёркивание. Первый символ — буква или цифра.";
+    }
     for(let i=1;i<=8;i++){
       const o=document.createElement("option");
       o.value=i;o.textContent=i;quarters.appendChild(o);
@@ -1078,7 +1122,9 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
       loginSubmit.disabled=false;
       await applySession(data.session);
     }catch(e){
-      accessMessage.textContent="Не удалось восстановить сеанс. Обновите страницу и войдите снова.";
+      await applySession(null,true);
+      loginSubmit.disabled=!sb;
+      showAccessError(e,"restore");
     }
   }
 
@@ -1088,7 +1134,7 @@ button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cur
   gateSignOut.onclick=signOutSession;
   retryAccess.onclick=async()=>{
     const {data,error}=await sb.auth.getSession();
-    if(error){accessMessage.textContent="Не удалось проверить сеанс. Выйдите и войдите снова.";return;}
+    if(error){showAccessError(error,"restore");return;}
     await applySession(data.session,true);
   };
   teamFilter.onchange=()=>{if(!drag)render();};

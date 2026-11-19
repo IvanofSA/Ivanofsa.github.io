@@ -10,12 +10,12 @@ const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1];
 const settle = () => new Promise(resolve => setTimeout(resolve, 30));
 const member = {user: {id: 'member', email: 'member@example.test'}};
 
-function setup(t, {session = null, denied = false, deferred = false, loginError = false, logoutError = false, settingsError = false, settingsConflict = false} = {}) {
+function setup(t, {session = null, denied = false, deferred = false, loginError = false, logoutError = false, settingsError = false, settingsConflict = false, loginDomain = ''} = {}) {
   const dom = new JSDOM(html, {url: 'https://roadmap.example.test/', runScripts: 'outside-only'});
   t.after(() => dom.window.close());
   const w = dom.window;
   const $ = id => w.document.getElementById(id);
-  const calls = [], pending = [];
+  const calls = [], pending = [], authCalls = [];
   let listener, clientOptions;
   const settings = {
     id: 'main', horizon_start: '2026-11-18', quarters: 2, business_slots: 4, tech_slots: 2, version: 1,
@@ -31,9 +31,10 @@ function setup(t, {session = null, denied = false, deferred = false, loginError 
       stopAutoRefresh() {}, startAutoRefresh() {},
       getSession: async () => ({data: {session}, error: null}),
       onAuthStateChange: fn => {listener = fn;},
-      signInWithPassword: async () => {
-        if (loginError) return {data: {session: null}, error: {message: 'Invalid login'}};
-        session = member;
+      signInWithPassword: async credentials => {
+        authCalls.push({email: credentials.email, passwordProvided: !!credentials.password});
+        if (loginError) return {data: {session: null}, error: typeof loginError === 'object' ? loginError : {code: 'invalid_credentials', message: 'Invalid login'}};
+        session = {user: {...member.user, email: credentials.email}};
         listener('SIGNED_IN', session);
         return {data: {session}, error: null};
       },
@@ -81,13 +82,13 @@ function setup(t, {session = null, denied = false, deferred = false, loginError 
     channel() {return {on() {return this;}, subscribe() {return this;}};},
     removeChannel: async () => {}
   };
-  w.ROADMAP_CONFIG = {supabaseUrl: 'https://backend.example.test', supabaseKey: 'test-only', roadmapId: 'main'};
+  w.ROADMAP_CONFIG = {supabaseUrl: 'https://backend.example.test', supabaseKey: 'test-only', roadmapId: 'main', loginDomain};
   w.supabase = {createClient(url, key, options) {clientOptions = options; return sb;}};
   w.alert = message => {throw new Error(message);};
   w.confirm = () => true;
   w.localStorage.setItem('roadmap-cloud-cache-v1', JSON.stringify({settings, activities}));
   const ready = w.eval(script);
-  return {w, $, calls, pending, ready, options: () => clientOptions,
+  return {w, $, calls, authCalls, pending, ready, options: () => clientOptions,
     emit: next => {session = next; listener(next ? 'SIGNED_IN' : 'SIGNED_OUT', next);}};
 }
 
@@ -109,7 +110,7 @@ test('anonymous visitor sees no roadmap, cached data, requests or export', async
 test('password sign-in opens roadmap; logout clears private DOM and editor fields', async t => {
   const app = setup(t);
   await app.ready;
-  app.$('loginEmail').value = 'member@example.test';
+  app.$('loginName').value = 'member@example.test';
   app.$('loginPassword').value = 'test-only-invalid-password';
   await app.$('loginForm').onsubmit({preventDefault() {}});
   await settle();
@@ -138,10 +139,69 @@ test('authenticated non-member stays behind the access gate', async t => {
   assert.match(app.$('accessMessage').textContent, /недоступна/);
 });
 
+test('username sign-in maps to a technical account and displays only the login', async t => {
+  const app = setup(t, {loginDomain: 'roadmap.invalid'});
+  await app.ready;
+  assert.equal(app.$('loginName').type, 'text');
+  assert.equal(app.$('loginNameLabel').textContent, 'Логин');
+  assert.equal(app.calls.length, 0);
+  app.$('loginName').value = '  SGC  ';
+  app.$('loginPassword').value = 'test-only-invalid-password';
+  await app.$('loginForm').onsubmit({preventDefault() {}});
+  await settle();
+  assert.deepEqual(app.authCalls, [{email: 'sgc@roadmap.invalid', passwordProvided: true}]);
+  assert.equal(app.$('roadmapApp').hidden, false);
+  assert.equal(app.$('loginPassword').value, '');
+  assert.equal(app.$('currentUser').textContent, 'sgc');
+  await app.$('signOut').onclick();
+  await settle();
+  assert.equal(app.$('roadmapApp').hidden, true);
+  assert.equal(app.$('gantt').textContent, '');
+  assert.equal(app.w.document.activeElement.id, 'loginName');
+});
+
+test('invalid username cannot address another email domain or send a login request', async t => {
+  const app = setup(t, {loginDomain: 'roadmap.invalid'});
+  await app.ready;
+  app.$('loginPassword').value = 'test-only-invalid-password';
+  for (const login of ['user@another.invalid', '<script>', 'имя', '.user', 'a'.repeat(33)]) {
+    app.$('loginName').value = login;
+    await app.$('loginForm').onsubmit({preventDefault() {}});
+    assert.equal(app.authCalls.length, 0, login);
+  }
+  assert.equal(app.calls.length, 0);
+  assert.equal(app.$('roadmapApp').hidden, true);
+});
+
+test('wrong password for a username keeps data closed and reports the server error', async t => {
+  const app = setup(t, {loginDomain: 'roadmap.invalid', loginError: true});
+  await app.ready;
+  app.$('loginName').value = 'sgc';
+  app.$('loginPassword').value = 'test-only-invalid-password';
+  await app.$('loginForm').onsubmit({preventDefault() {}});
+  assert.equal(app.calls.length, 0);
+  assert.equal(app.$('roadmapApp').hidden, true);
+  assert.match(app.$('accessMessage').textContent, /неверный логин или пароль/);
+  assert.equal(app.$('loginPassword').value, '');
+  assert.equal(app.$('accessErrorCode').textContent, 'Код: login/invalid_credentials');
+});
+
+test('username sign-in still requires membership in the roadmap', async t => {
+  const app = setup(t, {loginDomain: 'roadmap.invalid', denied: true});
+  await app.ready;
+  app.$('loginName').value = 'sgc';
+  app.$('loginPassword').value = 'test-only-invalid-password';
+  await app.$('loginForm').onsubmit({preventDefault() {}});
+  await settle();
+  assert.equal(app.$('roadmapApp').hidden, true);
+  assert.equal(app.$('gantt').textContent, '');
+  assert.match(app.$('accessMessage').textContent, /роадмапа недоступна/);
+});
+
 test('invalid password cannot trigger roadmap queries', async t => {
   const app = setup(t, {loginError: true});
   await app.ready;
-  app.$('loginEmail').value = 'member@example.test';
+  app.$('loginName').value = 'member@example.test';
   app.$('loginPassword').value = 'test-only-invalid-password';
   await app.$('loginForm').onsubmit({preventDefault() {}});
   assert.equal(app.calls.length, 0);
@@ -162,6 +222,28 @@ test('failed network logout cannot reopen a session through a delayed auth event
   assert.equal(app.$('gantt').textContent, '');
   assert.equal(app.w.sessionStorage.getItem('roadmap-auth-main'), null);
   assert.equal(app.$('loginSubmit').disabled, true);
+});
+
+test('unconfirmed email gets an actionable message without exposing raw server details', async t => {
+  const app = setup(t, {loginError: {code: 'email_not_confirmed', message: 'private server detail'}});
+  await app.ready;
+  app.$('loginName').value = 'member@example.test';
+  app.$('loginPassword').value = 'test-only-invalid-password';
+  await app.$('loginForm').onsubmit({preventDefault() {}});
+  assert.match(app.$('accessMessage').textContent, /Email не подтверждён/);
+  assert.equal(app.$('accessErrorCode').textContent, 'Код: login/email_not_confirmed');
+  assert.doesNotMatch(app.w.document.body.textContent, /private server detail/);
+  assert.equal(app.$('roadmapApp').hidden, true);
+  assert.equal(app.calls.length, 0);
+});
+
+test('missing roadmap access is distinguished from a password error', async t => {
+  const app = setup(t, {session: member, denied: true});
+  await app.ready;
+  assert.match(app.$('accessMessage').textContent, /Вход выполнен/);
+  assert.match(app.$('accessMessage').textContent, /проверить доступ пользователя/);
+  assert.equal(app.$('accessErrorCode').textContent, 'Код: roadmap/PGRST116');
+  assert.equal(app.$('gateSignOut').hidden, false);
 });
 
 test('late data response after logout cannot restore the private view', async t => {
